@@ -10,6 +10,6 @@ import {CustomButtonComponent} from '../common/custom-button/custom-button.compo
 	styleUrl: './toolbar.component.scss',
 })
 export class ToolbarComponent {
-	title = 'Kanban';
-	subtitle = 'Platform Launch';
+	public title = 'Kanban';
+	public subtitle = 'Platform Launch';
 }
