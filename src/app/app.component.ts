@@ -5,6 +5,7 @@ import {MatListModule} from '@angular/material/list';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {KanbanBoardComponent} from './kanban-board/kanban-board.component';
 
 @Component({
 	selector: 'app-root',
@@ -16,6 +17,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 		MatSidenavModule,
 		MatIconModule,
 		MatSlideToggleModule,
+		KanbanBoardComponent,
 	],
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.scss',

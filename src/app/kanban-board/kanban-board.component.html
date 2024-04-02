@@ -1,1 +1,13 @@
-<p>kanban-board works!</p>
+<section class="container-liquid">
+	<div class="row">
+		<div class="col-4 kanban-column">
+			<kanban-column [columnType]="'ToDo'" [tasks]="[]" />
+		</div>
+		<div class="col-4 kanban-column">
+			<kanban-column [columnType]="'Doing'" [tasks]="[]" />
+		</div>
+		<div class="col-4 kanban-column">
+			<kanban-column [columnType]="'Done'" [tasks]="[]" />
+		</div>
+	</div>
+</section>

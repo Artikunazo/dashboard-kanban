@@ -1,1 +1,8 @@
-<p>kanban-column works!</p>
+<p>
+	<status-circle [columnStatus]="columnType()" />
+	{{ columnType() }} ({{ tasks().length }})
+</p>
+
+@for (task of tasks(); track task) {
+<kanban-card />
+}

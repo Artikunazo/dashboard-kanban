@@ -1,0 +1,8 @@
+<mat-icon
+	[class.text-turquoise]="
+		columnTypes.ToDo === columnStatus()
+	"
+	[class.text-purple]="columnTypes.Doing === columnStatus()"
+	[class.text-success]="columnTypes.Done === columnStatus()"
+	>circle</mat-icon
+>
