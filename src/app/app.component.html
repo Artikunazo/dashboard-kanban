@@ -1,7 +1,6 @@
 <mat-drawer-container class="dashboard-container" autosize>
-	<!-- @TODO: Insert mat-drawer in another componment -->
 	<mat-drawer #drawer mode="side">
-		<mat-list>
+		<mat-list class="sidebar-options">
 			<mat-list-item>
 				<p>Platform Launch</p>
 			</mat-list-item>
@@ -13,7 +12,7 @@
 			</mat-list-item>
 		</mat-list>
 
-		<div class="row justify-content-center theme-toggle">
+		<div class="row theme-toggle">
 			<div class="col-3">
 				<mat-icon>light_mode</mat-icon>
 			</div>
@@ -23,10 +22,10 @@
 			<div class="col-3">
 				<mat-icon>dark_mode</mat-icon>
 			</div>
-		</div>
-		<div class="row">
 			<div class="col">
-				<p (click)="drawer.close()">Hide sidebar</p>
+				<p (click)="drawer.close()">
+					<mat-icon>visibility_off</mat-icon> Hide sidebar
+				</p>
 			</div>
 		</div>
 	</mat-drawer>
