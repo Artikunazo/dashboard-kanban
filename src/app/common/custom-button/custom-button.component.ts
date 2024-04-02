@@ -9,8 +9,9 @@ import {MaterialModule} from '../../material/material.module';
 	styleUrl: './custom-button.component.scss',
 })
 export class CustomButtonComponent {
-	public text = input('No text defined');
-	public colorButton = input('primary');
+	public text = input();
+	public colorButton = input('');
+	public iconName = input();
 
 	public clickEvent = output();
 }

@@ -1,13 +1,17 @@
 <section class="container-liquid">
 	<mat-toolbar class="row toolbar-main">
 		<div class="col-1">
-			<button
+			<!-- <button
 				type="button"
 				mat-button
 				(click)="openNav.emit()"
 			>
 				<mat-icon>menu</mat-icon>
-			</button>
+			</button> -->
+			<custom-button
+				(clickEvent)="openNav.emit()"
+				iconName="menu"
+			/>
 		</div>
 		<div class="col-7">
 			<h2>{{ subtitle }}</h2>
@@ -15,6 +19,7 @@
 		<div class="col-4">
 			<custom-button
 				[text]="'Add new task'"
+				[colorButton]="'primary'"
 				(clickEvent)="openTaskFormModal()"
 			/>
 		</div>

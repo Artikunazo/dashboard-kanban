@@ -4,4 +4,7 @@
 	(click)="clickEvent.emit()"
 >
 	{{ text() }}
+	@if(iconName()) {
+	<mat-icon>{{ iconName() }}</mat-icon>
+	}
 </button>
