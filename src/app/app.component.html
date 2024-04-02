@@ -1,1 +1,51 @@
-<toolbar />
+<mat-drawer-container class="dashboard-container" autosize>
+	<!-- @TODO: Insert mat-drawer in another componment -->
+	<mat-drawer #drawer mode="side">
+		<mat-list>
+			<mat-list-item>
+				<p>Platform Launch</p>
+			</mat-list-item>
+			<mat-list-item>
+				<p>Marketing plan</p>
+			</mat-list-item>
+			<mat-list-item>
+				<p>Roadmap</p>
+			</mat-list-item>
+		</mat-list>
+
+		<div class="row justify-content-center theme-toggle">
+			<div class="col-3">
+				<mat-icon>light_mode</mat-icon>
+			</div>
+			<div class="col-3">
+				<mat-slide-toggle></mat-slide-toggle>
+			</div>
+			<div class="col-3">
+				<mat-icon>dark_mode</mat-icon>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<p (click)="drawer.close()">Hide sidebar</p>
+			</div>
+		</div>
+	</mat-drawer>
+
+	<section class="main-container">
+		<button
+			type="button"
+			mat-button
+			(click)="drawer.open()"
+		>
+			<mat-icon>menu</mat-icon>
+		</button>
+
+		<toolbar />
+
+		<!-- container -->
+
+		<!-- <ng-template #routerOutlet>
+			<router-outlet />
+		</ng-template> -->
+	</section>
+</mat-drawer-container>
