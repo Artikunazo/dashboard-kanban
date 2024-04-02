@@ -10,4 +10,5 @@ import {MaterialModule} from '../../material/material.module';
 })
 export class CustomButtonComponent {
 	text = input('No text defined');
+	colorButton = input('primary');
 }
