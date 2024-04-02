@@ -31,15 +31,7 @@
 	</mat-drawer>
 
 	<section class="main-container">
-		<button
-			type="button"
-			mat-button
-			(click)="drawer.open()"
-		>
-			<mat-icon>menu</mat-icon>
-		</button>
-
-		<toolbar />
+		<toolbar (openNav)="drawer.open()" />
 
 		<!-- container -->
 

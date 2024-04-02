@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, output} from '@angular/core';
 import {MaterialModule} from '../material/material.module';
 import {CustomButtonComponent} from '../common/custom-button/custom-button.component';
 
@@ -10,6 +10,8 @@ import {CustomButtonComponent} from '../common/custom-button/custom-button.compo
 	styleUrl: './toolbar.component.scss',
 })
 export class ToolbarComponent {
+	public openNav = output();
+
 	public title = 'Kanban';
 	public subtitle = 'Platform Launch';
 }
