@@ -1,6 +1,8 @@
-import {Component, output} from '@angular/core';
+import {Component, inject, output} from '@angular/core';
 import {MaterialModule} from '../material/material.module';
 import {CustomButtonComponent} from '../common/custom-button/custom-button.component';
+import {MatDialog} from '@angular/material/dialog';
+import {TaskFormComponent} from '../task-form/task-form.component';
 
 @Component({
 	selector: 'toolbar',
@@ -12,6 +14,17 @@ import {CustomButtonComponent} from '../common/custom-button/custom-button.compo
 export class ToolbarComponent {
 	public openNav = output();
 
+	protected readonly dialog = inject(MatDialog);
+
 	public title = 'Kanban';
 	public subtitle = 'Platform Launch';
+
+	openTaskFormModal() {
+		const dialogRef = this.dialog.open(TaskFormComponent, {
+			width: '65%',
+			height: 'fit-content',
+		});
+
+		dialogRef.afterClosed().subscribe((result) => {});
+	}
 }

@@ -1,4 +1,4 @@
-import {Component, input} from '@angular/core';
+import {Component, input, output} from '@angular/core';
 import {MaterialModule} from '../../material/material.module';
 
 @Component({
@@ -11,4 +11,6 @@ import {MaterialModule} from '../../material/material.module';
 export class CustomButtonComponent {
 	public text = input('No text defined');
 	public colorButton = input('primary');
+
+	public clickEvent = output();
 }

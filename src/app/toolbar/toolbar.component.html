@@ -13,7 +13,10 @@
 			<h2>{{ subtitle }}</h2>
 		</div>
 		<div class="col-4">
-			<custom-button [text]="'Add new task'" />
+			<custom-button
+				[text]="'Add new task'"
+				(clickEvent)="openTaskFormModal()"
+			/>
 		</div>
 	</mat-toolbar>
 </section>
