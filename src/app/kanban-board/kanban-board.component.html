@@ -1,13 +1,22 @@
 <section class="container-liquid">
 	<div class="row">
 		<div class="col-4 kanban-column">
-			<kanban-column [columnType]="'ToDo'" [tasks]="[]" />
+			<kanban-column
+				[columnType]="'ToDo'"
+				[tasks]="taskListIndexed['ToDo']"
+			/>
 		</div>
 		<div class="col-4 kanban-column">
-			<kanban-column [columnType]="'Doing'" [tasks]="[]" />
+			<kanban-column
+				[columnType]="'Doing'"
+				[tasks]="taskListIndexed['Doing']"
+			/>
 		</div>
 		<div class="col-4 kanban-column">
-			<kanban-column [columnType]="'Done'" [tasks]="[]" />
+			<kanban-column
+				[columnType]="'Done'"
+				[tasks]="taskListIndexed['Done']"
+			/>
 		</div>
 	</div>
 </section>
