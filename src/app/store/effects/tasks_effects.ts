@@ -1,18 +1,11 @@
 import {Injectable, inject} from '@angular/core';
 import {Action} from '@ngrx/store';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {
-	Observable,
-	of,
-	switchMap,
-	map,
-	catchError,
-	mergeMap,
-	EMPTY,
-} from 'rxjs';
+import {Observable, of, map, catchError, mergeMap, EMPTY} from 'rxjs';
 import {DataService} from 'src/app/api/data.service';
 import * as fromTasksAction from '../actions/tasks_actions';
 import {ITask} from 'src/app/models/tasks_models';
+import * as fromTasksActions from '../actions/tasks_actions';
 
 @Injectable({
 	providedIn: 'root',
@@ -30,25 +23,34 @@ export class TasksEffects {
 			mergeMap(() =>
 				this.dataService.loadData().pipe(
 					map((response: any) => {
-						return new fromTasksAction.LoadTasksSuccess(
-							JSON.parse(response || {}),
-						);
+						const data = JSON.parse(response);
+						return new fromTasksAction.LoadTasksSuccess(data);
 					}),
-					catchError((error: any) =>
-						of(new fromTasksAction.LoadTasksFail(error)),
-					),
+					catchError((error: any) => {
+						return of(new fromTasksAction.LoadTasksFail(error));
+					}),
 				),
 			),
 		);
 	});
 
-	saveTasks$: Observable<Action> = createEffect(() => {
+	saveNewTask$: Observable<Action> = createEffect(() => {
 		return this.actions$.pipe(
-			ofType(this.tasksActionsTypes.LOAD_TASKS),
-			mergeMap((data: ITask) => {
-				this.dataService.saveData(data);
-				return of(new fromTasksAction.SaveTasksSuccess());
+			ofType(this.tasksActionsTypes.ADD_TASK),
+			mergeMap((data: fromTasksActions.AddTaskSuccess) => {
+				this.dataService.saveData(data.payload);
+				return of(new fromTasksAction.SaveTasksSuccess(data.payload));
 			}),
 		);
 	});
+
+	// saveTasks$: Observable<Action> = createEffect(() => {
+	// 	return this.actions$.pipe(
+	// 		ofType(this.tasksActionsTypes.SAVE_TASKS),
+	// 		mergeMap((data: fromTasksActions.AddTaskSuccess) => {
+	// 			this.dataService.saveData(data);
+	// 			return of(new fromTasksAction.SaveTasksSuccess(data.payload));
+	// 		}),
+	// 	);
+	// });
 }

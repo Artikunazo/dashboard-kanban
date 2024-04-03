@@ -8,6 +8,7 @@ export interface ITask {
 
 export interface ISubtasks {
 	title: string;
+	status?: string;
 }
 
 export enum TaskStatus {

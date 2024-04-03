@@ -21,13 +21,12 @@ export enum TasksActionType {
 
 	SAVE_TASKS = '[Task] Save Task',
 	SAVE_TASKS_SUCCESS = '[Task] Save Task Success',
+	SAVE_TASKS_FAIL = '[Task] Save Task Fail',
 }
 
 // LOAD
 export class LoadTasks implements Action {
 	readonly type = TasksActionType.LOAD_TASKS;
-
-	constructor(public payload: ITask) {}
 }
 
 export class LoadTasksSuccess implements Action {
@@ -105,6 +104,8 @@ export class SaveTasks implements Action {
 
 export class SaveTasksSuccess implements Action {
 	readonly type = TasksActionType.SAVE_TASKS_SUCCESS;
+
+	constructor(public payload: ITask) {}
 }
 
 export type TasksActions =
@@ -119,4 +120,6 @@ export type TasksActions =
 	| UpdateTasksFail
 	| DeleteTask
 	| DeleteTaskSuccess
-	| DeleteTaskFail;
+	| DeleteTaskFail
+	| SaveTasks
+	| SaveTasksSuccess;

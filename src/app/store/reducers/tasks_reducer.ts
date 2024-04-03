@@ -3,14 +3,16 @@ import * as fromTasksActions from '../actions/tasks_actions';
 import {EntityState, createEntityAdapter} from '@ngrx/entity';
 
 export interface TasksState extends EntityState<ITask> {
-	tasks: ITask[];
+	data: ITask[];
 	error: string;
 }
 
-export const taskAdapter = createEntityAdapter<ITask>();
+export const taskAdapter = createEntityAdapter<ITask>({
+	selectId: (task) => task.id ?? '',
+});
 
 export const initialState: TasksState = taskAdapter.getInitialState({
-	tasks: [],
+	data: [],
 	error: '',
 });
 
@@ -22,7 +24,7 @@ export function reducer(
 
 	switch (action.type) {
 		case tasksActionTypes.LOAD_TASKS_SUCCESS: {
-			return taskAdapter.setAll(action.payload, state);
+			return taskAdapter.setAll(<[]>action.payload, state);
 		}
 
 		case tasksActionTypes.LOAD_TASKS_FAIL: {
@@ -30,6 +32,7 @@ export function reducer(
 		}
 
 		case tasksActionTypes.ADD_TASK_SUCCESS: {
+			console.log('add task success', action.payload);
 			return taskAdapter.addOne(action.payload, state);
 		}
 
@@ -53,10 +56,14 @@ export function reducer(
 			return {...state, error: action.payload};
 		}
 
+		case tasksActionTypes.SAVE_TASKS_SUCCESS: {
+			return {...state};
+		}
+
 		default: {
 			return state;
 		}
 	}
 }
 
-export const getTasksData = (state: TasksState) => state.tasks;
+export const getTasksData = (state: TasksState) => state.data;
