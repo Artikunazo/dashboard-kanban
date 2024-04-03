@@ -1,6 +1,6 @@
 <p>
 	<status-circle [columnStatus]="columnType()" />
-	{{ columnType() }} ({{ tasks()?.length }})
+	{{ columnType() }} ({{ tasks()?.length ?? 0 }})
 </p>
 @for (task of tasks(); track task) {
 <kanban-card [task]="task" />
