@@ -1,1 +1,41 @@
-<p>task-form works!</p>
+<section class="task-form-container">
+	<h3 class="task-form-title">Add new task</h3>
+
+	<form [formGroup]="taskForm" class="row">
+		<mat-form-field class="col">
+			<mat-label>Title</mat-label>
+			<input matInput formControlName="title" type="text" />
+		</mat-form-field>
+
+		<mat-form-field class="col">
+			<mat-label>Description</mat-label>
+			<textarea
+				matInput
+				formControlName="description"
+				type="text"
+			></textarea>
+		</mat-form-field>
+
+		<!-- <mat-form-field class="col">
+		<mat-label>Subtasks</mat-label>
+	</mat-form-field> -->
+
+		<mat-form-field class="col">
+			<mat-label>Status</mat-label>
+			<mat-select formControlName="status">
+				@for(status of statusOptions; track status) {
+				<mat-option [value]="status">{{
+					status
+				}}</mat-option>
+				}
+			</mat-select>
+		</mat-form-field>
+
+		<custom-button
+			[text]="'Create task'"
+			[colorButton]="'primary'"
+			(clickEvent)="createTask()"
+			class="col create-task-button"
+		/>
+	</form>
+</section>
