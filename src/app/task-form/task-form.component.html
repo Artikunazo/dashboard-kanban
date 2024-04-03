@@ -16,9 +16,31 @@
 			></textarea>
 		</mat-form-field>
 
-		<!-- <mat-form-field class="col">
-		<mat-label>Subtasks</mat-label>
-	</mat-form-field> -->
+		<div
+			class="col row subtasks-container"
+			formArrayName="subtasks"
+		>
+			<h3>Subtasks</h3>
+			@for(subtask of subtasks.controls; track subtask) {
+			<mat-form-field class="col">
+				<input
+					matInput
+					formControlName="$index"
+					placeholder="Example"
+					type="text"
+					autocomplete="false"
+				/>
+			</mat-form-field>
+
+			}
+
+			<custom-button
+				[text]="'Add new subtask'"
+				[colorButton]="'acent'"
+				(clickEvent)="addSubtask()"
+				class="col add-subtasks-button"
+			/>
+		</div>
 
 		<mat-form-field class="col">
 			<mat-label>Status</mat-label>
