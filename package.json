@@ -33,6 +33,7 @@
     "@angular-devkit/build-angular": "^17.3.2",
     "@angular/cli": "^17.3.2",
     "@angular/compiler-cli": "^17.3.0",
+    "@ngrx/store-devtools": "^17.1.1",
     "@testing-library/angular": "^15.2.0",
     "@types/jest": "^29.5.12",
     "@types/uuid": "^9.0.8",
