@@ -3,6 +3,8 @@ import {MaterialModule} from '../material/material.module';
 import {CustomButtonComponent} from '../common/custom-button/custom-button.component';
 import {MatDialog} from '@angular/material/dialog';
 import {TaskFormComponent} from '../task-form/task-form.component';
+import {Store} from '@ngrx/store';
+import * as fromStore from '../store';
 
 @Component({
 	selector: 'toolbar',
@@ -15,6 +17,7 @@ export class ToolbarComponent {
 	public openNav = output();
 
 	protected readonly dialog = inject(MatDialog);
+	protected readonly store = inject(Store);
 
 	public title = 'Kanban';
 	public subtitle = 'Platform Launch';
@@ -25,6 +28,8 @@ export class ToolbarComponent {
 			maxHeight: '90vh',
 		});
 
-		dialogRef.afterClosed().subscribe((result) => {});
+		dialogRef.afterClosed().subscribe(() => {
+			this.store.dispatch(new fromStore.LoadTasks());
+		});
 	}
 }
