@@ -1,5 +1,5 @@
 import {Component, input} from '@angular/core';
-import {TaskStatus} from 'src/app/models/tasks_modes';
+import {TaskStatus} from 'src/app/models/tasks_models';
 import {MatIconModule} from '@angular/material/icon';
 
 @Component({

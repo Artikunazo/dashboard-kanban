@@ -1,6 +1,6 @@
 import {Update} from '@ngrx/entity';
 import {Action} from '@ngrx/store';
-import {ITask} from '../../models/tasks_modes';
+import {ITask} from '../../models/tasks_models';
 
 export enum TasksActionType {
 	LOAD_TASKS = '[Task] Load Tasks',
@@ -18,6 +18,9 @@ export enum TasksActionType {
 	DELETE_TASK = '[Task] Delete Task',
 	DELETE_TASK_SUCCESS = '[Task] Delete Task Success',
 	DELETE_TASK_FAIL = '[Task] Delete Task Fail',
+
+	SAVE_TASKS = '[Task] Save Task',
+	SAVE_TASKS_SUCCESS = '[Task] Save Task Success',
 }
 
 // LOAD
@@ -30,7 +33,7 @@ export class LoadTasks implements Action {
 export class LoadTasksSuccess implements Action {
 	readonly type = TasksActionType.LOAD_TASKS_SUCCESS;
 
-	constructor(public payload: string) {}
+	constructor(public payload: ITask[]) {}
 }
 
 export class LoadTasksFail implements Action {
@@ -43,13 +46,13 @@ export class LoadTasksFail implements Action {
 export class AddTask implements Action {
 	readonly type = TasksActionType.ADD_TASK;
 
-	constructor(public payload: string) {}
+	constructor(public payload: ITask) {}
 }
 
 export class AddTaskSuccess implements Action {
 	readonly type = TasksActionType.ADD_TASK_SUCCESS;
 
-	constructor(public payload: string) {}
+	constructor(public payload: ITask) {}
 }
 
 export class AddTaskFail implements Action {
@@ -94,6 +97,14 @@ export class DeleteTaskFail implements Action {
 	readonly type = TasksActionType.DELETE_TASK_FAIL;
 
 	constructor(public payload: string) {}
+}
+
+export class SaveTasks implements Action {
+	readonly type = TasksActionType.SAVE_TASKS;
+}
+
+export class SaveTasksSuccess implements Action {
+	readonly type = TasksActionType.SAVE_TASKS_SUCCESS;
 }
 
 export type TasksActions =

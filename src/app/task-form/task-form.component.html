@@ -21,17 +21,17 @@
 			formArrayName="subtasks"
 		>
 			<h3>Subtasks</h3>
+
 			@for(subtask of subtasks.controls; track subtask) {
-			<mat-form-field class="col">
+			<mat-form-field class="col" [formGroupName]="$index">
 				<input
 					matInput
-					formControlName="$index"
+					formControlName="title"
 					placeholder="Example"
 					type="text"
 					autocomplete="false"
 				/>
 			</mat-form-field>
-
 			}
 
 			<custom-button

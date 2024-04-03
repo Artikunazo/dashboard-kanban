@@ -1,8 +1,13 @@
 export interface ITask {
 	title: string;
 	description: string;
-	subtasks: string[];
-	status: TaskStatus;
+	subtasks: ISubtasks[];
+	status: string;
+	id?: string;
+}
+
+export interface ISubtasks {
+	title: string;
 }
 
 export enum TaskStatus {

@@ -22,7 +22,7 @@ export class ToolbarComponent {
 	openTaskFormModal() {
 		const dialogRef = this.dialog.open(TaskFormComponent, {
 			width: '65%',
-			height: 'fit-content',
+			maxHeight: '90vh',
 		});
 
 		dialogRef.afterClosed().subscribe((result) => {});

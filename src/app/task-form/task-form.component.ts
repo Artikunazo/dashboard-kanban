@@ -9,6 +9,9 @@ import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {CustomButtonComponent} from '../common/custom-button/custom-button.component';
+import * as fromStore from 'src/app/store';
+import {Store} from '@ngrx/store';
+import * as uuid from 'uuid';
 
 @Component({
 	selector: 'task-form',
@@ -24,7 +27,8 @@ import {CustomButtonComponent} from '../common/custom-button/custom-button.compo
 	styleUrl: './task-form.component.scss',
 })
 export class TaskFormComponent {
-	protected formBuilder = inject(FormBuilder);
+	protected readonly formBuilder = inject(FormBuilder);
+	protected readonly store = inject(Store);
 
 	// public subtasks = this.formBuilder.group({
 	// 	title: this.formBuilder.control('', [Validators.required]),
@@ -34,7 +38,9 @@ export class TaskFormComponent {
 		title: this.formBuilder.control('', [Validators.required]),
 		description: this.formBuilder.control('', [Validators.required]),
 		subtasks: this.formBuilder.array([
-			this.formBuilder.control('', [Validators.required]),
+			this.formBuilder.group({
+				title: this.formBuilder.control('', [Validators.required]),
+			}),
 		]),
 		status: this.formBuilder.control('', [Validators.required]),
 	});
@@ -46,8 +52,24 @@ export class TaskFormComponent {
 	}
 
 	addSubtask() {
-		return this.subtasks.push(this.formBuilder.control(''));
+		return this.subtasks.push(
+			this.formBuilder.group({
+				title: this.formBuilder.control('', [Validators.required]),
+			}),
+		);
 	}
 
-	createTask() {}
+	createTask() {
+		if (this.taskForm.invalid) return;
+
+		this.store.dispatch(
+			new fromStore.AddTask({
+				title: this.taskForm.value.title!,
+				description: this.taskForm.value.description!,
+				subtasks: <[]>this.taskForm.value.subtasks!,
+				status: this.taskForm.value.status!,
+				id: uuid.v4(),
+			}),
+		);
+	}
 }

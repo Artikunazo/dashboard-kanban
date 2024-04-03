@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {of} from 'rxjs';
+import {ITask} from '../models/tasks_models';
 
 @Injectable({
 	providedIn: 'root',
@@ -7,7 +8,7 @@ import {of} from 'rxjs';
 export class DataService {
 	constructor() {}
 
-	saveData(data: string) {
+	saveData(data: ITask) {
 		localStorage.setItem('kanban', JSON.stringify(data));
 	}
 
