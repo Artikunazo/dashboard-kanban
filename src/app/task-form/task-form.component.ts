@@ -12,6 +12,7 @@ import {CustomButtonComponent} from '../common/custom-button/custom-button.compo
 import * as fromStore from 'src/app/store';
 import {Store} from '@ngrx/store';
 import * as uuid from 'uuid';
+import {MatDialogRef} from '@angular/material/dialog';
 
 @Component({
 	selector: 'task-form',
@@ -47,8 +48,14 @@ export class TaskFormComponent {
 
 	public statusOptions = ['ToDo', 'Doing', 'Done'];
 
+	constructor(private matDialogRef: MatDialogRef<TaskFormComponent>) {}
+
 	get subtasks() {
 		return this.taskForm.get('subtasks') as FormArray;
+	}
+
+	closeDialog(): void {
+		this.matDialogRef.close();
 	}
 
 	addSubtask() {
@@ -71,5 +78,7 @@ export class TaskFormComponent {
 				id: uuid.v4(),
 			}),
 		);
+
+		this.closeDialog();
 	}
 }
