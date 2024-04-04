@@ -17,7 +17,9 @@
 				<mat-icon>light_mode</mat-icon>
 			</div>
 			<div class="col-3">
-				<mat-slide-toggle></mat-slide-toggle>
+				<mat-slide-toggle
+					[formControl]="themeToggled"
+				></mat-slide-toggle>
 			</div>
 			<div class="col-3">
 				<mat-icon>dark_mode</mat-icon>
