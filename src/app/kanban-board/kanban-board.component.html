@@ -1,18 +1,42 @@
 <section class="container-liquid">
-	<div class="row">
-		<div class="col-4 kanban-column todo">
+	<div class="row" cdkDropListGroup>
+		<div
+			class="col-4 kanban-column"
+			id="ToDo"
+			cdkDropList
+			#todoList="cdkDropList"
+			[cdkDropListData]="taskListIndexed['ToDo']"
+			[cdkDropListConnectedTo]="[doingList, doneList]"
+			(cdkDropListDropped)="drop($event)"
+		>
 			<kanban-column
 				[columnType]="'ToDo'"
 				[tasks]="taskListIndexed['ToDo']"
 			/>
 		</div>
-		<div class="col-4 kanban-column doing">
+		<div
+			class="col-4 kanban-column"
+			id="Doing"
+			cdkDropList
+			#doingList="cdkDropList"
+			[cdkDropListData]="taskListIndexed['Doing']"
+			[cdkDropListConnectedTo]="[todoList, doneList]"
+			(cdkDropListDropped)="drop($event)"
+		>
 			<kanban-column
 				[columnType]="'Doing'"
 				[tasks]="taskListIndexed['Doing']"
 			/>
 		</div>
-		<div class="col-4 kanban-column done">
+		<div
+			class="col-4 kanban-column"
+			id="Done"
+			cdkDropList
+			#doneList="cdkDropList"
+			[cdkDropListData]="taskListIndexed['Done']"
+			[cdkDropListConnectedTo]="[todoList, doingList]"
+			(cdkDropListDropped)="drop($event)"
+		>
 			<kanban-column
 				[columnType]="'Done'"
 				[tasks]="taskListIndexed['Done']"

@@ -3,5 +3,5 @@
 	{{ columnType() }} ({{ tasks()?.length ?? 0 }})
 </p>
 @for (task of tasks(); track task) {
-<kanban-card [task]="task" />
+<kanban-card [task]="task" cdkDrag />
 }
