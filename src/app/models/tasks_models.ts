@@ -3,7 +3,7 @@ export interface ITask {
 	description: string;
 	subtasks: ISubtasks[];
 	status: string;
-	id?: string;
+	id: string;
 }
 
 export interface ISubtasks {

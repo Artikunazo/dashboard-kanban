@@ -44,6 +44,22 @@ export class TasksEffects {
 		);
 	});
 
+	saveTaskUpdated$: Observable<Action> = createEffect(() => {
+		return this.actions$.pipe(
+			ofType(this.tasksActionsTypes.UPDATE_TASK),
+			mergeMap((data: fromTasksActions.UpdateTask) => {
+				console.log(data);
+				this.dataService.updateAndSave(data.payload);
+				return of(
+					new fromTasksAction.UpdateTasksSuccess({
+						id: data.payload.id,
+						changes: {...data.payload},
+					}),
+				);
+			}),
+		);
+	});
+
 	// saveTasks$: Observable<Action> = createEffect(() => {
 	// 	return this.actions$.pipe(
 	// 		ofType(this.tasksActionsTypes.SAVE_TASKS),

@@ -1,18 +1,18 @@
 <section class="container-liquid">
 	<div class="row">
-		<div class="col-4 kanban-column">
+		<div class="col-4 kanban-column todo">
 			<kanban-column
 				[columnType]="'ToDo'"
 				[tasks]="taskListIndexed['ToDo']"
 			/>
 		</div>
-		<div class="col-4 kanban-column">
+		<div class="col-4 kanban-column doing">
 			<kanban-column
 				[columnType]="'Doing'"
 				[tasks]="taskListIndexed['Doing']"
 			/>
 		</div>
-		<div class="col-4 kanban-column">
+		<div class="col-4 kanban-column done">
 			<kanban-column
 				[columnType]="'Done'"
 				[tasks]="taskListIndexed['Done']"

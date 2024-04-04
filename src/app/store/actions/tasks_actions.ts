@@ -62,9 +62,9 @@ export class AddTaskFail implements Action {
 
 // UPDATE
 export class UpdateTask implements Action {
-	readonly type = TasksActionType.LOAD_TASKS;
+	readonly type = TasksActionType.UPDATE_TASK;
 
-	constructor(public payload: string) {}
+	constructor(public payload: ITask) {}
 }
 
 export class UpdateTasksSuccess implements Action {
