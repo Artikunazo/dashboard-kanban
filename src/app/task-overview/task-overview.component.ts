@@ -30,9 +30,7 @@ export class TaskOverviewComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.statusSelected.valueChanges.subscribe({
-			next: (newValue) => {
-				console.log(newValue);
-			},
+			next: (newValue) => {},
 		});
 	}
 }
