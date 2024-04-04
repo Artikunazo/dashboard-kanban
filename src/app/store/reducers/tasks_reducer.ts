@@ -32,7 +32,6 @@ export function reducer(
 		}
 
 		case tasksActionTypes.ADD_TASK_SUCCESS: {
-			console.log('add task success', action.payload);
 			return taskAdapter.addOne(action.payload, state);
 		}
 

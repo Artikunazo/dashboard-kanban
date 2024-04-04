@@ -48,7 +48,6 @@ export class TasksEffects {
 		return this.actions$.pipe(
 			ofType(this.tasksActionsTypes.UPDATE_TASK),
 			mergeMap((data: fromTasksActions.UpdateTask) => {
-				console.log(data);
 				this.dataService.updateAndSave(data.payload);
 				return of(
 					new fromTasksAction.UpdateTasksSuccess({
