@@ -17,7 +17,7 @@
 	<div class="col row">
 		<h3>Status</h3>
 		<mat-form-field class="col">
-			<mat-select [(value)]="statusSelected">
+			<mat-select [formControl]="statusSelected">
 				@for(status of statusOptions; track status) {
 
 				<mat-option [value]="status">{{
