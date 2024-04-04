@@ -3,6 +3,8 @@ import {MatCardModule} from '@angular/material/card';
 import {ITask} from 'src/app/models/tasks_models';
 import {MatDialog} from '@angular/material/dialog';
 import {TaskOverviewComponent} from 'src/app/task-overview/task-overview.component';
+import {Store} from '@ngrx/store';
+import * as fromStore from 'src/app/store';
 
 @Component({
 	selector: 'kanban-card',
@@ -13,16 +15,21 @@ import {TaskOverviewComponent} from 'src/app/task-overview/task-overview.compone
 })
 export class KanbanCardComponent {
 	protected readonly matDialog = inject(MatDialog);
+	protected readonly store = inject(Store);
 
 	public task = input<ITask>();
 
 	openTaskOverviewModal(taskData: ITask | undefined) {
 		if (!taskData) return;
 
-		this.matDialog.open(TaskOverviewComponent, {
+		const dialogRef = this.matDialog.open(TaskOverviewComponent, {
 			width: '65%',
 			height: '90vh',
 			data: {...taskData},
+		});
+
+		dialogRef.afterClosed().subscribe(() => {
+			this.store.dispatch(new fromStore.LoadTasks());
 		});
 	}
 }
