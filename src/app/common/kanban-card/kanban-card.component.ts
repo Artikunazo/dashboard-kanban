@@ -24,7 +24,8 @@ export class KanbanCardComponent {
 
 		const dialogRef = this.matDialog.open(TaskOverviewComponent, {
 			width: '65%',
-			height: '90vh',
+			height: 'fit-content',
+			maxHeight: '90vh',
 			data: {...taskData},
 		});
 
