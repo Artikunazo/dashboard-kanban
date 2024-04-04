@@ -5,6 +5,8 @@
 >
 	{{ text() }}
 	@if(iconName()) {
-	<mat-icon>{{ iconName() }}</mat-icon>
+	<mat-icon [customIcon]="'medium'">{{
+		iconName()
+	}}</mat-icon>
 	}
 </button>

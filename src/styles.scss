@@ -42,3 +42,21 @@ body.light-theme {
 body.dark-theme {
 	@include mat.all-component-themes($dark-theme);
 }
+
+// CUSTOM ICON
+
+.small {
+	font-size: 16px;
+	padding-top: 8.5px;
+	padding-left: 8px;
+}
+
+.medium {
+	font-size: 20px;
+	padding-top: 3px;
+	padding-left: 2px;
+}
+
+.big {
+	font-size: 24px;
+}

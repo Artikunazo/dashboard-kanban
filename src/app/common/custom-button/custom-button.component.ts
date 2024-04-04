@@ -1,10 +1,11 @@
 import {Component, input, output} from '@angular/core';
 import {MaterialModule} from '../../material/material.module';
+import {CustomIconDirective} from '../custom-icon.directive';
 
 @Component({
 	selector: 'custom-button',
 	standalone: true,
-	imports: [MaterialModule],
+	imports: [MaterialModule, CustomIconDirective],
 	templateUrl: './custom-button.component.html',
 	styleUrl: './custom-button.component.scss',
 })

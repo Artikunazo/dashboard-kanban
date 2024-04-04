@@ -7,6 +7,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {KanbanBoardComponent} from './kanban-board/kanban-board.component';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {CustomIconDirective} from './common/custom-icon.directive';
 
 @Component({
 	selector: 'app-root',
@@ -20,6 +21,7 @@ import {FormControl, ReactiveFormsModule} from '@angular/forms';
 		MatSlideToggleModule,
 		KanbanBoardComponent,
 		ReactiveFormsModule,
+		CustomIconDirective,
 	],
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.scss',
