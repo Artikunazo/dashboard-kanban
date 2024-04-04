@@ -1,5 +1,4 @@
 /* You can add global styles to this file, and also import other style files */
-// @import '../node_modules/@angular/material/prebuilt-themes/purple-green.css';
 @use '@angular/material' as mat;
 
 html,
@@ -43,7 +42,3 @@ body.light-theme {
 body.dark-theme {
 	@include mat.all-component-themes($dark-theme);
 }
-
-// body.dark-theme {
-// 	@import '@angular/material/prebuilt-themes/purple-green.css';
-// }
