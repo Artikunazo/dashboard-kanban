@@ -18,6 +18,6 @@ import {CdkDrag, CdkDropList, DragDropModule} from '@angular/cdk/drag-drop';
 	styleUrl: './kanban-column.component.scss',
 })
 export class KanbanColumnComponent {
-	public columnType = input<string>('');
+	public columnType = input<string>('ToDo');
 	public tasks = input<ITask[]>([]);
 }

@@ -6,7 +6,7 @@
 			></mat-checkbox>
 		</div>
 		<div class="col-11 align-self-center">
-			<p [subtaskDone]="newSubtask?.status">
+			<p [subtaskDone]="newSubtask?.status ?? ''">
 				{{ subtask()?.title }}
 			</p>
 		</div>

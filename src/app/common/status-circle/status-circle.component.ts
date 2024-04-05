@@ -12,5 +12,5 @@ import {CustomIconDirective} from '../custom-icon.directive';
 })
 export class StatusCircleComponent {
 	public columnTypes = TaskStatus;
-	public columnStatus = input<TaskStatus>();
+	public columnStatus = input<TaskStatus | string>(TaskStatus.ToDo);
 }

@@ -22,7 +22,7 @@ export class KanbanBoardComponent implements OnInit {
 	ngOnInit(): void {
 		this.store.dispatch(new fromStore.LoadTasks());
 		this.store.select(fromStore.getTasks).subscribe({
-			next: (response: ITask[]) => {
+			next: (response) => {
 				this.tasksList = response;
 				this.indexTasks();
 			},
