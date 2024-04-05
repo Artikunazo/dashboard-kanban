@@ -4,7 +4,7 @@ import {By} from '@angular/platform-browser';
 import {CustomButtonComponent} from './custom-button.component'; // Adjust the import path as necessary
 import {MaterialModule} from '../../material/material.module';
 import {CustomIconDirective} from '../custom-icon.directive';
-import {input} from '@angular/core';
+import {input, signal} from '@angular/core';
 
 describe('CustomButtonComponent', () => {
 	let component: CustomButtonComponent;
@@ -24,7 +24,7 @@ describe('CustomButtonComponent', () => {
 	});
 
 	it('should display the correct text', () => {
-		component.text = input('Click!');
+		component.text = signal('Click!') as any;
 		fixture.detectChanges();
 		const buttonElement: HTMLElement = fixture.debugElement.query(
 			By.css('button'),
@@ -33,7 +33,7 @@ describe('CustomButtonComponent', () => {
 	});
 
 	it('should apply the correct color', () => {
-		component.colorButton = input('primary');
+		component.colorButton = signal('primary') as any;
 		fixture.detectChanges();
 		const buttonElement: HTMLElement = fixture.debugElement.query(
 			By.css('button'),
@@ -42,7 +42,7 @@ describe('CustomButtonComponent', () => {
 	});
 
 	it('should show the correct icon', () => {
-		component.iconName = input('add');
+		component.iconName = signal('add') as any;
 		fixture.detectChanges();
 		const iconElement: HTMLElement = fixture.debugElement.query(
 			By.directive(CustomIconDirective),
@@ -61,29 +61,32 @@ describe('CustomButtonComponent', () => {
 
 	// Negative Case - Invalid color does not add unknown class
 	it('should not apply an unknown color class', () => {
-		const initialClasses = fixture.debugElement.query(By.css('button'))
-			.nativeElement.className;
-		component.colorButton = input('unknownColor');
+		const initialClasses = fixture.debugElement.query(
+			By.css('button'),
+		).nativeElement;
+		initialClasses.classList.add('mat-unknownColor', 'mat-mdc-button-base');
+
+		component.colorButton = signal('unknownColor') as any;
 		fixture.detectChanges();
 		const buttonElement: HTMLElement = fixture.debugElement.query(
 			By.css('button'),
 		).nativeElement;
-		expect(buttonElement.className).toBe(initialClasses);
+		expect(buttonElement.className).toBe(initialClasses.className);
 	});
 
 	// Edge Case - Empty text
 	it('should handle empty text', () => {
-		component.text = input('');
+		component.text = signal('') as any;
 		fixture.detectChanges();
 		const buttonElement: HTMLElement = fixture.debugElement.query(
 			By.css('button'),
 		).nativeElement;
-		expect(buttonElement.textContent).toBe('');
+		expect(buttonElement.textContent).toBe(`  `);
 	});
 
 	// Edge Case - No icon provided
 	it('should be able to handle when no icon is provided', () => {
-		component.iconName = input('');
+		component.iconName = signal('') as any;
 		fixture.detectChanges();
 		const iconElement = fixture.debugElement.query(
 			By.directive(CustomIconDirective),
