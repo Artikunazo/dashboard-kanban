@@ -9,23 +9,23 @@ import * as fromTasksActions from '../store/actions/tasks_actions';
 export class DataService {
 	constructor() {}
 
-	saveData(data: ITask) {
+	saveData(data: ITask, key = 'kanban') {
 		const kanbanData = JSON.parse(
 			this.loadDataWithoutObservable() ?? JSON.stringify([]),
 		);
 		const newKanbanData = [...kanbanData, data];
-		localStorage.setItem('kanban', JSON.stringify(newKanbanData));
+		localStorage.setItem(key, JSON.stringify(newKanbanData));
 	}
 
-	loadData() {
-		return of(localStorage.getItem('kanban'));
+	loadData(key = 'kanban') {
+		return of(localStorage.getItem(key));
 	}
 
-	loadDataWithoutObservable() {
-		return localStorage.getItem('kanban');
+	loadDataWithoutObservable(key = 'kanban') {
+		return localStorage.getItem(key);
 	}
 
-	updateAndSave(data: ITask) {
+	updateAndSave(data: ITask, key = 'kanban') {
 		const kanbanData = JSON.parse(
 			this.loadDataWithoutObservable() ?? JSON.stringify([]),
 		);
@@ -34,6 +34,14 @@ export class DataService {
 		);
 
 		kanbanData[indexToUpdate] = data;
-		localStorage.setItem('kanban', JSON.stringify(kanbanData));
+		localStorage.setItem(key, JSON.stringify(kanbanData));
+	}
+
+	saveTheme(themeName: string, key = 'theme') {
+		localStorage.setItem(key, themeName);
+	}
+
+	getTheme(key = 'theme') {
+		return of(localStorage.getItem(key));
 	}
 }

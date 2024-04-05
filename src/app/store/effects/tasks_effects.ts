@@ -1,10 +1,9 @@
 import {Injectable, inject} from '@angular/core';
 import {Action} from '@ngrx/store';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {Observable, of, map, catchError, mergeMap, EMPTY} from 'rxjs';
+import {Observable, of, map, catchError, mergeMap} from 'rxjs';
 import {DataService} from 'src/app/api/data.service';
 import * as fromTasksAction from '../actions/tasks_actions';
-import {ITask} from 'src/app/models/tasks_models';
 import * as fromTasksActions from '../actions/tasks_actions';
 
 @Injectable({

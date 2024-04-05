@@ -98,6 +98,7 @@ export class DeleteTaskFail implements Action {
 	constructor(public payload: string) {}
 }
 
+// SAVE
 export class SaveTasks implements Action {
 	readonly type = TasksActionType.SAVE_TASKS;
 }

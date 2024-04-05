@@ -6,6 +6,7 @@ import {provideState, provideStore} from '@ngrx/store';
 import {provideStoreDevtools} from '@ngrx/store-devtools';
 
 import * as fromTasksReducer from './store/reducers/tasks_reducer';
+import * as fromThemeReducer from './store/reducers/theme_reducer';
 import {routes} from './app.routes';
 import {effects} from './store';
 
@@ -16,6 +17,7 @@ export const appConfig: ApplicationConfig = {
 		provideEffects(effects),
 		provideStore(),
 		provideState({name: 'tasks', reducer: fromTasksReducer.reducer}),
+		provideState({name: 'theme', reducer: fromThemeReducer.reducer}),
 		provideStoreDevtools(),
 	],
 };

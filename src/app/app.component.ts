@@ -8,6 +8,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {KanbanBoardComponent} from './kanban-board/kanban-board.component';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {CustomIconDirective} from './common/custom-icon.directive';
+import {ThemeSwitcherComponent} from './theme-switcher/theme-switcher.component';
 
 @Component({
 	selector: 'app-root',
@@ -17,32 +18,13 @@ import {CustomIconDirective} from './common/custom-icon.directive';
 		ToolbarComponent,
 		MatListModule,
 		MatSidenavModule,
-		MatIconModule,
 		MatSlideToggleModule,
 		KanbanBoardComponent,
-		ReactiveFormsModule,
-		CustomIconDirective,
+		ThemeSwitcherComponent,
 	],
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.scss',
 })
 export class AppComponent {
 	title = 'dashboard-kanban';
-
-	themeToggled = new FormControl(false);
-
-	constructor() {
-		this.themeToggled.valueChanges.subscribe((checked) => {
-			// Enable light theme
-			if (!checked) {
-				const body = document.querySelector('body');
-				body?.classList.remove('dark-theme');
-			}
-
-			if (checked) {
-				const body = document.querySelector('body');
-				body?.classList.add('dark-theme');
-			}
-		});
-	}
 }
