@@ -1,4 +1,4 @@
-import {Component, OnInit, inject} from '@angular/core';
+import {Component, Inject, OnInit, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -22,15 +22,16 @@ import {ITask} from '../models/tasks_models';
 })
 export class TaskOverviewComponent implements OnInit {
 	public task!: ITask;
-	public statusSelected = new FormControl(this.task.status);
+	public statusSelected = new FormControl();
 	public statusOptions = ['ToDo', 'Doing', 'Done'];
 
 	constructor(
-		private readonly matDialogData: any,
-		private readonly dialogRef: MatDialogRef<TaskOverviewComponent>,
+		@Inject(MAT_DIALOG_DATA)
+		private readonly matDialogData: ITask,
 		private readonly store: Store,
 	) {
 		this.task = this.matDialogData;
+		this.statusSelected.setValue(this.task.status);
 	}
 
 	ngOnInit(): void {
@@ -47,11 +48,11 @@ export class TaskOverviewComponent implements OnInit {
 	}
 
 	subtaskUpdated(event: any) {
-		const {title, status, index} = event;
-		const newSubtasks = [...this.task.subtasks];
-		newSubtasks[index] = {title, status};
-		this.task = {...this.task, subtasks: newSubtasks};
 		console.log(this.task);
+		// const {title, status, index} = event;
+		// const newSubtasks = [...this.task.subtasks];
+		// newSubtasks[index] = {title, status};
+		// this.task = {...this.task, subtasks: newSubtasks};
 		// console.log('after', this.task());
 		// this.store.dispatch(new fromStore.UpdateTask(this.task()));
 		// const {title, status, index} = event;
