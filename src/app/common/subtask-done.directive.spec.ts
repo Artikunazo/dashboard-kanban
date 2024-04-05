@@ -17,7 +17,7 @@ describe('SubtaskDoneDirective', () => {
 	});
 
 	it('should add "markedDone" class when subtaskDone is "Done"', () => {
-		directive.subtaskDone = input('Done');
+		directive.subtaskDone = 'Done';
 		directive.ngOnChanges({
 			subtaskDone: {
 				currentValue: 'Done',
@@ -33,7 +33,7 @@ describe('SubtaskDoneDirective', () => {
 	});
 
 	it('should remove "markedDone" class when subtaskDone is not "Done"', () => {
-		directive.subtaskDone = input('Done');
+		directive.subtaskDone = 'Done';
 		directive.ngOnChanges({
 			subtaskDone: {
 				currentValue: 'Done',
