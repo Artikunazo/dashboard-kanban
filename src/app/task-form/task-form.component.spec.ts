@@ -24,6 +24,10 @@ describe('TaskFormComponent', () => {
 	let fixture: ComponentFixture<TaskFormComponent>;
 	let store: Store;
 
+	class MockStore {
+		dispatch = jest.fn();
+	}
+
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			imports: [
@@ -40,7 +44,7 @@ describe('TaskFormComponent', () => {
 				{provide: FormBuilder, useValue: new FormBuilder()},
 				{provide: MatDialogRef, useValue: {}},
 				{provide: Store, useValue: {}},
-				{provide: uuid, useValue: {}},
+				{provide: uuid, useValue: MockStore},
 				importProvidersFrom(Store),
 			],
 		}).compileComponents();

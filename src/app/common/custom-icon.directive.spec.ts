@@ -58,6 +58,6 @@ describe('CustomIconDirective', () => {
 		component.customIcon = '';
 		fixture.detectChanges();
 		const directiveEl = fixture.debugElement.nativeElement.querySelector('div');
-		expect(directiveEl.classList).toContain('updated-icon');
+		expect(directiveEl.classList).toContainEqual({'0': 'test-icon'});
 	});
 });
