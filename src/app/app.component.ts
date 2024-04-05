@@ -3,11 +3,8 @@ import {RouterOutlet} from '@angular/router';
 import {ToolbarComponent} from './toolbar/toolbar.component';
 import {MatListModule} from '@angular/material/list';
 import {MatSidenavModule} from '@angular/material/sidenav';
-import {MatIconModule} from '@angular/material/icon';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {KanbanBoardComponent} from './kanban-board/kanban-board.component';
-import {FormControl, ReactiveFormsModule} from '@angular/forms';
-import {CustomIconDirective} from './common/custom-icon.directive';
 import {ThemeSwitcherComponent} from './theme-switcher/theme-switcher.component';
 
 @Component({
