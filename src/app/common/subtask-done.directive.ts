@@ -11,7 +11,7 @@ import {
 	standalone: true,
 })
 export class SubtaskDoneDirective implements OnChanges {
-	public subtaskDone = input();
+	public subtaskDone = input<string>('');
 
 	constructor(private el: ElementRef) {}
 

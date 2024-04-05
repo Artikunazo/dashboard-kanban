@@ -1,23 +1,81 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { KanbanColumnComponent } from './kanban-column.component';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {KanbanColumnComponent} from './kanban-column.component';
+import {KanbanCardComponent} from '../kanban-card/kanban-card.component';
+import {StatusCircleComponent} from '../status-circle/status-circle.component';
+import {ITask} from '../../models/tasks_models';
+import {CdkDrag, CdkDropList, DragDropModule} from '@angular/cdk/drag-drop';
+import {input} from '@angular/core';
 
 describe('KanbanColumnComponent', () => {
-  let component: KanbanColumnComponent;
-  let fixture: ComponentFixture<KanbanColumnComponent>;
+	const subtasks = [
+		{
+			title: 'subtast 1',
+			status: 'ToDo',
+		},
+	];
+	const tasks: ITask[] = [
+		{
+			id: '1',
+			title: 'Task 1',
+			description: 'Description 1',
+			status: 'ToDo',
+			subtasks,
+		},
+		{
+			id: '2',
+			title: 'Task 2',
+			description: 'Description 2',
+			status: 'ToDo',
+			subtasks,
+		},
+	];
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [KanbanColumnComponent]
-    })
-    .compileComponents();
-    
-    fixture = TestBed.createComponent(KanbanColumnComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+	let component: KanbanColumnComponent;
+	let fixture: ComponentFixture<KanbanColumnComponent>;
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			imports: [
+				KanbanColumnComponent,
+				KanbanCardComponent,
+				StatusCircleComponent,
+				CdkDrag,
+				CdkDropList,
+			],
+		}).compileComponents();
+	});
+
+	beforeEach(() => {
+		fixture = TestBed.createComponent(KanbanColumnComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
+
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
+
+	it('should set columnType and tasks input properties', () => {
+		const columnType = 'test-column';
+
+		component.columnType = input(columnType);
+		component.tasks = input(tasks);
+		fixture.detectChanges();
+		expect(component.columnType).toEqual(columnType);
+		expect(component.tasks).toEqual(tasks);
+	});
+
+	it('should render the columnType and tasks in the template', () => {
+		const columnType = 'test-column';
+		component.columnType = input(columnType);
+		component.tasks = input(tasks);
+		fixture.detectChanges();
+		const compiled = fixture.nativeElement;
+		expect(
+			compiled.querySelector('[data-testid="column-type"]').textContent,
+		).toContain(columnType);
+		expect(compiled.querySelectorAll('kanban-card').length).toEqual(
+			tasks.length,
+		);
+	});
 });

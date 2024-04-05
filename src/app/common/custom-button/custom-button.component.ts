@@ -10,9 +10,9 @@ import {CustomIconDirective} from '../custom-icon.directive';
 	styleUrl: './custom-button.component.scss',
 })
 export class CustomButtonComponent {
-	public text = input();
+	public text = input<string>('');
 	public colorButton = input('');
-	public iconName = input();
+	public iconName = input<string>('');
 
 	public clickEvent = output();
 }

@@ -1,4 +1,4 @@
-import {ITask, TaskStatus} from 'src/app/models/tasks_models';
+import {ITask, TaskStatus} from '../../models/tasks_models';
 import * as fromTasksActions from '../actions/tasks_actions';
 import {EntityState, createEntityAdapter} from '@ngrx/entity';
 

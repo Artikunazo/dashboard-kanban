@@ -1,10 +1,10 @@
 import {Component, inject, input} from '@angular/core';
 import {MatCardModule} from '@angular/material/card';
-import {ITask} from 'src/app/models/tasks_models';
+import {ITask} from '../../models/tasks_models';
 import {MatDialog} from '@angular/material/dialog';
-import {TaskOverviewComponent} from 'src/app/task-overview/task-overview.component';
+import {TaskOverviewComponent} from '../../../app/task-overview/task-overview.component';
 import {Store} from '@ngrx/store';
-import * as fromStore from 'src/app/store';
+import * as fromStore from '../../../app/store';
 
 @Component({
 	selector: 'kanban-card',

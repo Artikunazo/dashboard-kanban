@@ -2,7 +2,7 @@ import {Component, OnInit, inject} from '@angular/core';
 import {KanbanColumnComponent} from '../common/kanban-column/kanban-column.component';
 
 import {Store} from '@ngrx/store';
-import * as fromStore from 'src/app/store';
+import * as fromStore from '../store';
 import {ITask} from '../models/tasks_models';
 import {DragDropModule, CdkDragDrop} from '@angular/cdk/drag-drop';
 
@@ -16,8 +16,8 @@ import {DragDropModule, CdkDragDrop} from '@angular/cdk/drag-drop';
 export class KanbanBoardComponent implements OnInit {
 	protected readonly store = inject(Store);
 
-	protected tasksList: ITask[] = [];
-	protected taskListIndexed!: {[key: string]: ITask[]};
+	public tasksList: ITask[] = [];
+	public taskListIndexed!: {[key: string]: ITask[]};
 
 	ngOnInit(): void {
 		this.store.dispatch(new fromStore.LoadTasks());

@@ -9,7 +9,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {CustomButtonComponent} from '../common/custom-button/custom-button.component';
-import * as fromStore from 'src/app/store';
+import * as fromStore from '../store';
 import {Store} from '@ngrx/store';
 import * as uuid from 'uuid';
 import {MatDialogRef} from '@angular/material/dialog';

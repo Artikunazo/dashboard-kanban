@@ -1,5 +1,5 @@
 import {Component, input} from '@angular/core';
-import {TaskStatus} from 'src/app/models/tasks_models';
+import {TaskStatus} from '../../models/tasks_models';
 import {MatIconModule} from '@angular/material/icon';
 import {CustomIconDirective} from '../custom-icon.directive';
 
@@ -12,5 +12,5 @@ import {CustomIconDirective} from '../custom-icon.directive';
 })
 export class StatusCircleComponent {
 	public columnTypes = TaskStatus;
-	public columnStatus = input();
+	public columnStatus = input<TaskStatus>();
 }

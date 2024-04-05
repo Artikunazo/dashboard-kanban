@@ -1,5 +1,5 @@
 import {Component, input, output} from '@angular/core';
-import {ISubtask} from 'src/app/models/tasks_models';
+import {ISubtask} from '../../models/tasks_models';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {SubtaskDoneDirective} from '../subtask-done.directive';
 
@@ -11,8 +11,8 @@ import {SubtaskDoneDirective} from '../subtask-done.directive';
 	styleUrl: './subtasks-overview.component.scss',
 })
 export class SubtasksOverviewComponent {
-	public subtask = input<ISubtask>();
-	public index = input<number>();
+	public subtask = input<ISubtask>({title: '', status: ''});
+	public index = input<number>(0);
 	public subtaskUpdated = output<{}>();
 
 	public newSubtask!: ISubtask;

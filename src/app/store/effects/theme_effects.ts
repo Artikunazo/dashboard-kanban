@@ -2,7 +2,7 @@ import {Injectable, inject} from '@angular/core';
 import {Action} from '@ngrx/store';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Observable, of, map, catchError, mergeMap} from 'rxjs';
-import {DataService} from 'src/app/api/data.service';
+import {DataService} from '../../api/data.service';
 import * as fromThemeActions from '../actions/theme_actions';
 
 @Injectable({

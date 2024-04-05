@@ -7,7 +7,6 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
-	declarations: [],
 	imports: [CommonModule],
 	exports: [
 		MatButtonModule,
