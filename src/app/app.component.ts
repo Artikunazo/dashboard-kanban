@@ -6,6 +6,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {KanbanBoardComponent} from './kanban-board/kanban-board.component';
 import {ThemeSwitcherComponent} from './theme-switcher/theme-switcher.component';
+import {Store} from '@ngrx/store';
 
 @Component({
 	selector: 'app-root',
@@ -24,4 +25,6 @@ import {ThemeSwitcherComponent} from './theme-switcher/theme-switcher.component'
 })
 export class AppComponent {
 	title = 'dashboard-kanban';
+
+	constructor(protected readonly store: Store) {}
 }

@@ -47,6 +47,7 @@ describe('CustomButtonComponent', () => {
 		const iconElement: HTMLElement = fixture.debugElement.query(
 			By.directive(CustomIconDirective),
 		).nativeElement;
+		console.log(iconElement);
 		expect(iconElement.getAttribute('ng-reflect-icon')).toEqual('add');
 	});
 

@@ -5,6 +5,7 @@ import * as fromStore from '../store';
 import * as fromTaskReducer from '../store/reducers/tasks_reducer';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {importProvidersFrom} from '@angular/core';
 
 describe('ThemeSwitcherComponent', () => {
 	let component: ThemeSwitcherComponent;
@@ -16,10 +17,10 @@ describe('ThemeSwitcherComponent', () => {
 			imports: [
 				ReactiveFormsModule,
 				MatSlideToggleModule,
-				StoreModule.forRoot({}),
-				StoreModule.forFeature('tasks', fromTaskReducer.reducer),
+				StoreModule.forRoot(fromStore.reducers),
 				ThemeSwitcherComponent,
 			],
+			providers: [importProvidersFrom(Store)],
 		}).compileComponents();
 	});
 

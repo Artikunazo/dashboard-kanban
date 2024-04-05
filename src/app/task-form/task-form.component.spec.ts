@@ -15,6 +15,9 @@ import * as uuid from 'uuid';
 import {MatDialogRef} from '@angular/material/dialog';
 import * as fromStore from '../store';
 import * as fromTaskReducer from '../store/reducers/tasks_reducer';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {reducers} from '../store/reducers';
+import {importProvidersFrom} from '@angular/core';
 
 describe('TaskFormComponent', () => {
 	let component: TaskFormComponent;
@@ -28,16 +31,17 @@ describe('TaskFormComponent', () => {
 				MatFormFieldModule,
 				MatInputModule,
 				MatSelectModule,
-				StoreModule.forRoot({}),
-				StoreModule.forFeature('tasks', fromTaskReducer.reducer),
+				StoreModule.forRoot(reducers),
 				TaskFormComponent,
 				CustomButtonComponent,
+				BrowserAnimationsModule,
 			],
 			providers: [
 				{provide: FormBuilder, useValue: new FormBuilder()},
 				{provide: MatDialogRef, useValue: {}},
 				{provide: Store, useValue: {}},
 				{provide: uuid, useValue: {}},
+				importProvidersFrom(Store),
 			],
 		}).compileComponents();
 	});

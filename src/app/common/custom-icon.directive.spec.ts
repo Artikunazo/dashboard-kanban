@@ -1,7 +1,9 @@
 // Necessary imports for the test
-import {Component, input} from '@angular/core';
+import {Component, importProvidersFrom, input} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {CustomIconDirective} from './custom-icon.directive';
+import {reducers} from '../store/reducers';
+import {Store, StoreModule} from '@ngrx/store';
 
 @Component({
 	template: `<div [customIcon]="icon"></div>`,
@@ -15,7 +17,12 @@ describe('CustomIconDirective', () => {
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			imports: [TestComponent, CustomIconDirective],
+			imports: [
+				TestComponent,
+				CustomIconDirective,
+				StoreModule.forRoot(reducers),
+			],
+			providers: [importProvidersFrom(Store)],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(TestComponent);
@@ -35,14 +42,14 @@ describe('CustomIconDirective', () => {
 
 	it('should update the class when the input changes', () => {
 		const directiveEl = fixture.debugElement.nativeElement.querySelector('div');
-		component.customIcon = input('updated-icon');
+		component.customIcon = 'updated-icon';
 		fixture.detectChanges();
 		expect(directiveEl.classList).toContain('updated-icon');
 		expect(directiveEl.classList).not.toContain('test-icon');
 	});
 
 	it('should handle empty input', () => {
-		component.customIcon = input('');
+		component.customIcon = '';
 		fixture.detectChanges();
 		const directiveEl = fixture.debugElement.nativeElement.querySelector('div');
 		expect(directiveEl.classList).toContain('updated-icon');

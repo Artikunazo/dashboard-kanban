@@ -4,7 +4,7 @@ import {KanbanCardComponent} from '../kanban-card/kanban-card.component';
 import {StatusCircleComponent} from '../status-circle/status-circle.component';
 import {ITask} from '../../models/tasks_models';
 import {CdkDrag, CdkDropList, DragDropModule} from '@angular/cdk/drag-drop';
-import {input} from '@angular/core';
+import {input, signal} from '@angular/core';
 
 describe('KanbanColumnComponent', () => {
 	const subtasks = [
@@ -58,8 +58,8 @@ describe('KanbanColumnComponent', () => {
 	it('should set columnType and tasks input properties', () => {
 		const columnType = 'test-column';
 
-		component.columnType = input(columnType);
-		component.tasks = input(tasks);
+		component.columnType = signal(columnType) as any;
+		component.tasks = signal(tasks) as any;
 		fixture.detectChanges();
 		expect(component.columnType).toEqual(columnType);
 		expect(component.tasks).toEqual(tasks);
@@ -67,8 +67,8 @@ describe('KanbanColumnComponent', () => {
 
 	it('should render the columnType and tasks in the template', () => {
 		const columnType = 'test-column';
-		component.columnType = input(columnType);
-		component.tasks = input(tasks);
+		component.columnType = signal(columnType) as any;
+		component.tasks = signal(tasks) as any;
 		fixture.detectChanges();
 		const compiled = fixture.nativeElement;
 		expect(

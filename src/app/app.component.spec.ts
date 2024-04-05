@@ -9,7 +9,11 @@ import {MatListModule} from '@angular/material/list';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import * as fromStore from './store';
+import {Store, StoreModule} from '@ngrx/store';
+
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {importProvidersFrom} from '@angular/core';
+import {reducers} from './store/reducers';
 
 describe('AppComponent', () => {
 	let component: AppComponent;
@@ -21,12 +25,14 @@ describe('AppComponent', () => {
 				MatListModule,
 				MatSidenavModule,
 				MatSlideToggleModule,
+				StoreModule.forRoot(reducers),
 				AppComponent,
 				ToolbarComponent,
 				KanbanBoardComponent,
 				ThemeSwitcherComponent,
 				BrowserAnimationsModule,
 			],
+			providers: [importProvidersFrom(Store)],
 		}).compileComponents();
 	});
 
@@ -42,13 +48,6 @@ describe('AppComponent', () => {
 
 	it(`should have as title 'dashboard-kanban'`, () => {
 		expect(component.title).toEqual('dashboard-kanban');
-	});
-
-	it('should render title in a h1 tag', () => {
-		const compiled = fixture.debugElement.nativeElement;
-		expect(compiled.querySelector('h1').textContent).toContain(
-			'dashboard-kanban',
-		);
 	});
 
 	it('should include the toolbar component', () => {

@@ -3,7 +3,7 @@ import {SubtasksOverviewComponent} from './subtasks-overview.component';
 import {ISubtask} from '../../models/tasks_models';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {SubtaskDoneDirective} from '../subtask-done.directive';
-import {input} from '@angular/core';
+import {signal} from '@angular/core';
 
 describe('SubtasksOverviewComponent', () => {
 	let component: SubtasksOverviewComponent;
@@ -29,21 +29,21 @@ describe('SubtasksOverviewComponent', () => {
 		expect(component).toBeTruthy();
 	});
 
-	it('should set subtask and index input properties', () => {
+	it('should set subtask and index signal properties', () => {
 		const subtask: ISubtask = {title: 'Test Subtask', status: 'ToDo', index: 0};
 		const index = 1;
-		component.subtask = input(subtask);
-		component.index = input(index);
+		component.subtask = signal(subtask) as any;
+		component.index = signal(index) as any;
 		fixture.detectChanges();
-		expect(component.subtask).toEqual(subtask);
-		expect(component.index).toEqual(index);
+		expect(component.subtask()).toEqual(subtask);
+		expect(component.index()).toEqual(index);
 	});
 
 	it('should emit subtaskUpdated output event when changed method is called', () => {
 		const subtask: ISubtask = {title: 'Test Subtask', status: 'ToDo', index: 0};
 		const index = 1;
-		component.subtask = input(subtask);
-		component.index = input(index);
+		component.subtask = signal(subtask) as any;
+		component.index = signal(index) as any;
 		const subtaskUpdatedSpy = jest.spyOn(component.subtaskUpdated, 'emit');
 		component.changed(true);
 		expect(subtaskUpdatedSpy).toHaveBeenCalledWith({
