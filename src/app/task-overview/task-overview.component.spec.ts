@@ -48,10 +48,16 @@ describe('TaskOverviewComponent', () => {
 
 	it('should set task and statusSelected input properties', () => {
 		const task = {
-			id: 1,
-			name: 'Test Task',
+			id: '1',
+			title: 'Test Task',
 			description: 'Test Description',
 			status: 'ToDo',
+			subtasks: [
+				{
+					title: 'Subtask 1',
+					status: 'ToDo',
+				},
+			],
 		};
 		const statusSelected = new FormControl(task.status);
 		component.task = task;
@@ -87,8 +93,8 @@ describe('TaskOverviewComponent', () => {
 
 	it('should update task subtasks when subtaskUpdated is called', () => {
 		const task = {
-			id: 1,
-			name: 'Test Task',
+			id: '1',
+			title: 'Test Task',
 			description: 'Test Description',
 			status: 'ToDo',
 			subtasks: [{title: 'Test Subtask', status: 'ToDo'}],

@@ -14,10 +14,10 @@ import {DragDropModule, CdkDragDrop} from '@angular/cdk/drag-drop';
 	styleUrl: './kanban-board.component.scss',
 })
 export class KanbanBoardComponent implements OnInit {
-	protected readonly store = inject(Store);
-
 	public tasksList: ITask[] = [];
 	public taskListIndexed!: {[key: string]: ITask[]};
+
+	constructor(private readonly store: Store) {}
 
 	ngOnInit(): void {
 		this.store.dispatch(new fromStore.LoadTasks());

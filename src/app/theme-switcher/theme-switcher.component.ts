@@ -19,13 +19,11 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 	styleUrl: './theme-switcher.component.scss',
 })
 export class ThemeSwitcherComponent implements OnInit {
-	protected readonly store = inject(Store);
-
 	public switcherToggled = output();
 
 	themeToggled = new FormControl(false);
 
-	constructor() {
+	constructor(private readonly store: Store) {
 		this.themeToggled.valueChanges.subscribe((checked) => {
 			const darkThemeName = 'dark-theme';
 			const body = document.querySelector('body');

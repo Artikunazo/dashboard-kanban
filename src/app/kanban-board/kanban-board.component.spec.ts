@@ -68,7 +68,6 @@ describe('KanbanBoardComponent', () => {
 	it('should index tasks when getTasks is emitted', () => {
 		component.tasksList = tasks;
 		component.indexTasks();
-		console.log(component.taskListIndexed);
 		expect(component.taskListIndexed).toEqual({
 			ToDo: [tasks[0]],
 			Doing: [tasks[1]],

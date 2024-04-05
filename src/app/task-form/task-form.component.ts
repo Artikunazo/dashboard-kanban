@@ -4,6 +4,7 @@ import {
 	Validators,
 	FormBuilder,
 	FormArray,
+	FormGroup,
 } from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -28,28 +29,27 @@ import {MatDialogRef} from '@angular/material/dialog';
 	styleUrl: './task-form.component.scss',
 })
 export class TaskFormComponent {
-	protected readonly formBuilder = inject(FormBuilder);
-	protected readonly store = inject(Store);
-
-	// public subtasks = this.formBuilder.group({
-	// 	title: this.formBuilder.control('', [Validators.required]),
-	// });
-
-	public taskForm = this.formBuilder.group({
-		title: this.formBuilder.control('', [Validators.required]),
-		description: this.formBuilder.control('', [Validators.required]),
-		subtasks: this.formBuilder.array([
-			this.formBuilder.group({
-				title: this.formBuilder.control('', [Validators.required]),
-				status: this.formBuilder.control('ToDo'),
-			}),
-		]),
-		status: this.formBuilder.control('', [Validators.required]),
-	});
+	public taskForm!: FormGroup;
 
 	public statusOptions = ['ToDo', 'Doing', 'Done'];
 
-	constructor(private matDialogRef: MatDialogRef<TaskFormComponent>) {}
+	constructor(
+		private readonly formBuilder: FormBuilder,
+		private readonly store: Store,
+		private matDialogRef: MatDialogRef<TaskFormComponent>,
+	) {
+		this.taskForm = this.formBuilder.group({
+			title: this.formBuilder.control('', [Validators.required]),
+			description: this.formBuilder.control('', [Validators.required]),
+			subtasks: this.formBuilder.array([
+				this.formBuilder.group({
+					title: this.formBuilder.control('', [Validators.required]),
+					status: this.formBuilder.control('ToDo'),
+				}),
+			]),
+			status: this.formBuilder.control('', [Validators.required]),
+		});
+	}
 
 	get subtasks() {
 		return this.taskForm.get('subtasks') as FormArray;

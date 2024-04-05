@@ -6,6 +6,7 @@ import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SubtasksOverviewComponent} from '../common/subtasks-overview/subtasks-overview.component';
 import {Store} from '@ngrx/store';
 import * as fromStore from '../store';
+import {ITask} from '../models/tasks_models';
 
 @Component({
 	selector: 'task-overview',
@@ -14,22 +15,23 @@ import * as fromStore from '../store';
 		SubtasksOverviewComponent,
 		MatSelectModule,
 		MatFormFieldModule,
-		FormsModule,
 		ReactiveFormsModule,
 	],
 	templateUrl: './task-overview.component.html',
 	styleUrl: './task-overview.component.scss',
 })
 export class TaskOverviewComponent implements OnInit {
-	protected readonly matDialogData = inject(MAT_DIALOG_DATA);
-	protected readonly dialogRef = inject(
-		MatDialogRef,
-	) as MatDialogRef<TaskOverviewComponent>;
-	protected readonly store = inject(Store);
-
-	public task = this.matDialogData;
+	public task!: ITask;
 	public statusSelected = new FormControl(this.task.status);
 	public statusOptions = ['ToDo', 'Doing', 'Done'];
+
+	constructor(
+		private readonly matDialogData: any,
+		private readonly dialogRef: MatDialogRef<TaskOverviewComponent>,
+		private readonly store: Store,
+	) {
+		this.task = this.matDialogData;
+	}
 
 	ngOnInit(): void {
 		this.statusSelected.valueChanges.subscribe({

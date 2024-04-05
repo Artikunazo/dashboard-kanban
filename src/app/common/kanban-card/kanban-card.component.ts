@@ -14,8 +14,10 @@ import * as fromStore from '../../../app/store';
 	styleUrl: './kanban-card.component.scss',
 })
 export class KanbanCardComponent {
-	protected readonly matDialog = inject(MatDialog);
-	protected readonly store = inject(Store);
+	constructor(
+		private readonly matDialog: MatDialog,
+		private readonly store: Store,
+	) {}
 
 	public task = input<ITask>();
 

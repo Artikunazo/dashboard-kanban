@@ -9,9 +9,10 @@ import * as fromThemeActions from '../actions/theme_actions';
 	providedIn: 'root',
 })
 export class ThemeEffects {
-	protected readonly dataService = inject(DataService);
-
-	constructor(private actions$: Actions) {}
+	constructor(
+		private actions$: Actions,
+		private readonly dataService: DataService,
+	) {}
 
 	protected readonly themeActionsTypes = fromThemeActions.ThemeActionTypes;
 

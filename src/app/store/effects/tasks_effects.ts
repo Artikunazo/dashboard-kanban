@@ -10,9 +10,10 @@ import * as fromTasksActions from '../actions/tasks_actions';
 	providedIn: 'root',
 })
 export class TasksEffects {
-	protected readonly dataService = inject(DataService);
-
-	constructor(private actions$: Actions) {}
+	constructor(
+		private actions$: Actions,
+		private readonly dataService: DataService,
+	) {}
 
 	protected readonly tasksActionsTypes = fromTasksAction.TasksActionType;
 

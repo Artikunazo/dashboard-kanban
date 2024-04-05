@@ -16,11 +16,13 @@ import * as fromStore from '../store';
 export class ToolbarComponent {
 	public openNav = output();
 
-	protected readonly dialog = inject(MatDialog);
-	protected readonly store = inject(Store);
-
 	public title = 'Kanban';
 	public subtitle = 'Platform Launch';
+
+	constructor(
+		private readonly dialog: MatDialog,
+		private readonly store: Store,
+	) {}
 
 	openTaskFormModal() {
 		const dialogRef = this.dialog.open(TaskFormComponent, {
