@@ -44,13 +44,19 @@ export class DataService {
 
 	saveData(data: ITask, key = 'kanban') {
 		const kanbanData = JSON.parse(
-			this.loadDataWithoutObservable() ?? JSON.stringify(this.defaultTasks),
+			this.loadDataWithoutObservable() ?? JSON.stringify([]),
 		);
 		const newKanbanData = [...kanbanData, data];
 		localStorage.setItem(key, JSON.stringify(newKanbanData));
 	}
 
 	loadData(key = 'kanban') {
+		const data = localStorage.getItem(key);
+		if (!data) {
+			for (const task of this.defaultTasks) {
+				this.saveData(task);
+			}
+		}
 		return of(localStorage.getItem(key));
 	}
 
