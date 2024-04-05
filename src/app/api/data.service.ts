@@ -2,16 +2,49 @@ import {Injectable} from '@angular/core';
 import {of} from 'rxjs';
 import {ITask} from '../models/tasks_models';
 import * as fromTasksActions from '../store/actions/tasks_actions';
+import * as uuid from 'uuid';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class DataService {
+	protected readonly defaultTasks: ITask[] = [
+		{
+			title: 'Tarea 1',
+			description:
+				'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Atque aspernatur debitis magni, doloribus et quod quibusdam! Laborum ipsum officiis reprehenderit molestiae mollitia, tempore optio beatae qui ex, quae veniam asperiores!',
+			subtasks: [
+				{
+					title: 'SubTask 1',
+					status: 'ToDo',
+				},
+			],
+			status: 'ToDo',
+			id: uuid.v4(),
+		},
+		{
+			title: 'Tarea 2',
+			description:
+				'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Atque aspernatur debitis magni, doloribus et quod quibusdam! Laborum ipsum officiis reprehenderit molestiae mollitia, tempore optio beatae qui ex, quae veniam asperiores!',
+			subtasks: [
+				{
+					title: 'SubTask 1',
+					status: 'ToDo',
+				},
+				{
+					title: 'SubTask 2',
+					status: 'ToDo',
+				},
+			],
+			status: 'ToDo',
+			id: uuid.v4(),
+		},
+	];
 	constructor() {}
 
 	saveData(data: ITask, key = 'kanban') {
 		const kanbanData = JSON.parse(
-			this.loadDataWithoutObservable() ?? JSON.stringify([]),
+			this.loadDataWithoutObservable() ?? JSON.stringify(this.defaultTasks),
 		);
 		const newKanbanData = [...kanbanData, data];
 		localStorage.setItem(key, JSON.stringify(newKanbanData));
