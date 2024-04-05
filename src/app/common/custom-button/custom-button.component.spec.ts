@@ -12,8 +12,7 @@ describe('CustomButtonComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [CustomButtonComponent, CustomIconDirective],
-			imports: [MaterialModule],
+			imports: [MaterialModule, CustomButtonComponent, CustomIconDirective],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(CustomButtonComponent);
