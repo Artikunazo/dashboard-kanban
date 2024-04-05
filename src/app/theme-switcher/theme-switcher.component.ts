@@ -32,7 +32,6 @@ export class ThemeSwitcherComponent implements OnInit {
 			// Enable light theme
 			if (!checked) {
 				body?.classList.remove(darkThemeName);
-				// ToDo bug here
 				this.store.dispatch(new fromStore.SaveTheme('ligth'));
 			} else {
 				body?.classList.add(darkThemeName);
