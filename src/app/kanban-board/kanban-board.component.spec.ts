@@ -27,7 +27,7 @@ describe('KanbanBoardComponent', () => {
 			id: '2',
 			title: 'Task 2',
 			description: 'Description 2',
-			status: 'ToDo',
+			status: 'Doing',
 			subtasks,
 		},
 	];
@@ -68,9 +68,10 @@ describe('KanbanBoardComponent', () => {
 	it('should index tasks when getTasks is emitted', () => {
 		component.tasksList = tasks;
 		component.indexTasks();
+		console.log(component.taskListIndexed);
 		expect(component.taskListIndexed).toEqual({
-			'To Do': [tasks[0]],
-			'In Progress': [tasks[1]],
+			ToDo: [tasks[0]],
+			Doing: [tasks[1]],
 		});
 	});
 
