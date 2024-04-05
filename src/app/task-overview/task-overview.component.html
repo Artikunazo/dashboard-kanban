@@ -10,7 +10,11 @@
 	<div class="col">
 		<h3>Subtasks</h3>
 		@for(subtask of task.subtasks; track subtask ) {
-		<subtasks-overview [subtask]="subtask" />
+		<subtasks-overview
+			[subtask]="subtask"
+			(subtaskUpdated)="subtaskUpdated($event)"
+			[index]="$index"
+		/>
 		}
 	</div>
 

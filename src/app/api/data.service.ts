@@ -14,7 +14,6 @@ export class DataService {
 			this.loadDataWithoutObservable() ?? JSON.stringify([]),
 		);
 		const newKanbanData = [...kanbanData, data];
-		debugger;
 		localStorage.setItem('kanban', JSON.stringify(newKanbanData));
 	}
 

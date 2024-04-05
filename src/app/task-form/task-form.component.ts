@@ -41,6 +41,7 @@ export class TaskFormComponent {
 		subtasks: this.formBuilder.array([
 			this.formBuilder.group({
 				title: this.formBuilder.control('', [Validators.required]),
+				status: this.formBuilder.control('ToDo'),
 			}),
 		]),
 		status: this.formBuilder.control('', [Validators.required]),
@@ -62,6 +63,7 @@ export class TaskFormComponent {
 		return this.subtasks.push(
 			this.formBuilder.group({
 				title: this.formBuilder.control('', [Validators.required]),
+				status: this.formBuilder.control('ToDo'),
 			}),
 		);
 	}
