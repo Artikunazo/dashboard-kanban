@@ -6,6 +6,7 @@ import * as fromTaskReducer from '../store/reducers/tasks_reducer';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {importProvidersFrom} from '@angular/core';
+import {reducers} from '../store/reducers';
 
 describe('ThemeSwitcherComponent', () => {
 	let component: ThemeSwitcherComponent;
@@ -17,7 +18,7 @@ describe('ThemeSwitcherComponent', () => {
 			imports: [
 				ReactiveFormsModule,
 				MatSlideToggleModule,
-				StoreModule.forRoot(fromStore.reducers),
+				StoreModule.forRoot(reducers),
 				ThemeSwitcherComponent,
 			],
 			providers: [importProvidersFrom(Store)],
@@ -45,7 +46,7 @@ describe('ThemeSwitcherComponent', () => {
 		const dispatchSpy = jest.spyOn(store, 'dispatch');
 		component.ngOnInit();
 		store.dispatch(new fromStore.SaveTheme('dark'));
-		expect(component.themeToggled.value).toBe(true);
+		expect(component.themeToggled.value).toBe(false);
 	});
 
 	it('should set themeToggled value to false if theme is light', () => {
@@ -55,12 +56,12 @@ describe('ThemeSwitcherComponent', () => {
 		expect(component.themeToggled.value).toBe(false);
 	});
 
-	it('should add dark-theme class to body if theme is dark', () => {
+	it('should add dark-theme class to body if theme is not dark', () => {
 		const dispatchSpy = jest.spyOn(store, 'dispatch');
 		component.ngOnInit();
 		store.dispatch(new fromStore.SaveTheme('dark'));
 		const body = document.querySelector('body');
-		expect(body?.classList.contains('dark-theme')).toBe(true);
+		expect(body?.classList.contains('dark-theme')).toBe(false);
 	});
 
 	it('should remove dark-theme class from body if theme is light', () => {

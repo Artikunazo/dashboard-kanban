@@ -6,9 +6,11 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SubtasksOverviewComponent} from '../common/subtasks-overview/subtasks-overview.component';
 import {Store, StoreModule} from '@ngrx/store';
-import * as fromStore from '../store';
-import * as fromTaskReducer from '../store/reducers/tasks_reducer';
+import {reducers} from '../store/reducers';
 import {ITask} from '../models/tasks_models';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {importProvidersFrom} from '@angular/core';
+import * as fromStore from '../store';
 
 describe('TaskOverviewComponent', () => {
 	let component: TaskOverviewComponent;
@@ -22,15 +24,16 @@ describe('TaskOverviewComponent', () => {
 				MatFormFieldModule,
 				FormsModule,
 				ReactiveFormsModule,
-				StoreModule.forRoot({}),
-				StoreModule.forFeature('tasks', fromTaskReducer.reducer),
+				StoreModule.forRoot(reducers),
 				TaskOverviewComponent,
 				SubtasksOverviewComponent,
+				BrowserAnimationsModule,
 			],
 			providers: [
 				{provide: MAT_DIALOG_DATA, useValue: {}},
 				{provide: MatDialogRef, useValue: {}},
 				{provide: Store, useValue: {}},
+				importProvidersFrom(Store),
 			],
 		}).compileComponents();
 	});
@@ -97,7 +100,7 @@ describe('TaskOverviewComponent', () => {
 			title: 'Test Task',
 			description: 'Test Description',
 			status: 'ToDo',
-			subtasks: [{title: 'Test Subtask', status: 'ToDo'}],
+			subtasks: [{title: 'Test Subtask', status: 'ToDo', index: 0}],
 		};
 		component.task = task;
 		const event = {title: 'Updated Test Subtask', status: 'Done', index: 0};

@@ -4,6 +4,9 @@ import {TestBed} from '@angular/core/testing';
 import {CustomIconDirective} from './custom-icon.directive';
 import {reducers} from '../store/reducers';
 import {Store, StoreModule} from '@ngrx/store';
+import {MatListModule} from '@angular/material/list';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @Component({
 	template: `<div [customIcon]="icon"></div>`,
@@ -18,10 +21,13 @@ describe('CustomIconDirective', () => {
 	beforeEach(() => {
 		TestBed.configureTestingModule({
 			imports: [
-				TestComponent,
-				CustomIconDirective,
+				MatListModule,
+				MatSidenavModule,
+				MatSlideToggleModule,
 				StoreModule.forRoot(reducers),
+				CustomIconDirective,
 			],
+			declarations: [TestComponent],
 			providers: [importProvidersFrom(Store)],
 		}).compileComponents();
 
