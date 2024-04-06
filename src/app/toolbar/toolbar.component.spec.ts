@@ -8,6 +8,7 @@ import {Store, StoreModule} from '@ngrx/store';
 import * as fromStore from '../store';
 import * as fromTaskReducer from '../store/reducers/tasks_reducer';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {of} from 'rxjs';
 
 describe('ToolbarComponent', () => {
 	let component: ToolbarComponent;
@@ -55,7 +56,9 @@ describe('ToolbarComponent', () => {
 	});
 
 	it('should open TaskFormComponent when openTaskFormModal is called', () => {
-		const dialogOpenSpy = jest.spyOn(matDialog, 'open');
+		const dialogOpenSpy = spyOn(matDialog, 'open').and.returnValue({
+			open: () => jest.fn(),
+		});
 		component.openTaskFormModal();
 		expect(dialogOpenSpy).toHaveBeenCalledWith(TaskFormComponent, {
 			width: '65%',

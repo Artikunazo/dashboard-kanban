@@ -4,7 +4,9 @@ import {KanbanCardComponent} from '../kanban-card/kanban-card.component';
 import {StatusCircleComponent} from '../status-circle/status-circle.component';
 import {ITask} from '../../models/tasks_models';
 import {CdkDrag, CdkDropList, DragDropModule} from '@angular/cdk/drag-drop';
-import {input, signal} from '@angular/core';
+import {importProvidersFrom, input, signal} from '@angular/core';
+import {Store, StoreModule} from '@ngrx/store';
+import {reducers} from '../../store/reducers';
 
 describe('KanbanColumnComponent', () => {
 	const subtasks = [
@@ -41,7 +43,9 @@ describe('KanbanColumnComponent', () => {
 				StatusCircleComponent,
 				CdkDrag,
 				CdkDropList,
+				StoreModule.forRoot(reducers),
 			],
+			providers: [importProvidersFrom(Store)],
 		}).compileComponents();
 	});
 

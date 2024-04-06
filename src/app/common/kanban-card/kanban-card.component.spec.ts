@@ -27,6 +27,7 @@ describe('KanbanCardComponent', () => {
 				KanbanCardComponent,
 				TaskOverviewComponent,
 			],
+			providers: [{provide: MatDialogRef, useValue: {}}],
 		}).compileComponents();
 	});
 
@@ -35,7 +36,7 @@ describe('KanbanCardComponent', () => {
 		component = fixture.componentInstance;
 		store = TestBed.inject(Store);
 		matDialog = TestBed.inject(MatDialog);
-
+		matDialogRef = TestBed.inject(MatDialogRef);
 		jest.spyOn(matDialog, 'open');
 		fixture.detectChanges();
 	});

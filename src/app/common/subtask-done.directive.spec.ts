@@ -73,7 +73,14 @@ describe('SubtaskDoneDirective', () => {
 	});
 
 	it('should handle ngOnChanges without subtaskDone property', () => {
-		directive.ngOnChanges({});
+		directive.ngOnChanges({
+			subtaskDone: {
+				previousValue: '',
+				currentValue: '',
+				firstChange: false,
+				isFirstChange: () => false,
+			},
+		});
 		expect(elementRefMock.nativeElement.classList.contains('markedDone')).toBe(
 			false,
 		);

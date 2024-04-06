@@ -5,6 +5,8 @@ import {
 	Validators,
 	FormBuilder,
 	FormArray,
+	FormGroup,
+	FormControl,
 } from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -23,6 +25,8 @@ describe('TaskFormComponent', () => {
 	let component: TaskFormComponent;
 	let fixture: ComponentFixture<TaskFormComponent>;
 	let store: Store;
+	let formBuilder: FormBuilder;
+	let matDialogRef: MatDialogRef<TaskFormComponent>;
 
 	class MockStore {
 		dispatch = jest.fn();
@@ -42,9 +46,19 @@ describe('TaskFormComponent', () => {
 			],
 			providers: [
 				{provide: FormBuilder, useValue: new FormBuilder()},
-				{provide: MatDialogRef, useValue: {}},
-				{provide: Store, useValue: {}},
-				{provide: uuid, useValue: MockStore},
+				{
+					provide: MatDialogRef,
+					useValue: jest.fn().mockImplementation(() => ({
+						close: jest.fn(),
+					})),
+				},
+				{
+					provide: Store,
+					useValue: jest.fn().mockImplementation(() => ({
+						dispatch: jest.fn(),
+					})),
+				},
+				{provide: uuid, useValue: {}},
 				importProvidersFrom(Store),
 			],
 		}).compileComponents();
@@ -54,6 +68,8 @@ describe('TaskFormComponent', () => {
 		fixture = TestBed.createComponent(TaskFormComponent);
 		component = fixture.componentInstance;
 		store = TestBed.inject(Store);
+		formBuilder = TestBed.inject(FormBuilder);
+		matDialogRef = TestBed.inject(MatDialogRef);
 		fixture.detectChanges();
 	});
 
@@ -69,6 +85,20 @@ describe('TaskFormComponent', () => {
 			{title: 'Test Subtask 2', status: 'Doing'},
 		];
 		const status = 'Done';
+		component.taskForm = new FormGroup({
+			title: new FormControl(title),
+			description: new FormControl(description),
+			subtasks: new FormArray(
+				subtasks.map(
+					(subtask) =>
+						new FormGroup({
+							title: new FormControl(subtask.title),
+							status: new FormControl(subtask.status),
+						}),
+				),
+			),
+			status: new FormControl(status),
+		});
 		component.taskForm.setValue({title, description, subtasks, status});
 		expect(component.taskForm.value).toEqual({
 			title,
@@ -93,11 +123,31 @@ describe('TaskFormComponent', () => {
 		];
 		const status = 'Done';
 		const id = 'test-id';
-		const dispatchSpy = jest.spyOn(store, 'dispatch');
+		component.taskForm = new FormGroup({
+			title: new FormControl(title),
+			description: new FormControl(description),
+			subtasks: new FormArray(
+				subtasks.map(
+					(subtask) =>
+						new FormGroup({
+							title: new FormControl(subtask.title),
+							status: new FormControl(subtask.status),
+						}),
+				),
+			),
+			status: new FormControl(status),
+		});
 		component.taskForm.setValue({title, description, subtasks, status});
+		const dispatchSpy = jest.spyOn(store, 'dispatch');
 		component.createTask();
 		expect(dispatchSpy).toHaveBeenCalledWith(
-			new fromStore.AddTask({title, description, subtasks, status, id}),
+			new fromStore.AddTask({
+				title,
+				description,
+				subtasks,
+				status,
+				id: expect.any(String),
+			}),
 		);
 	});
 });

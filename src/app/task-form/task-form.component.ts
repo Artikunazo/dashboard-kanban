@@ -29,15 +29,17 @@ import {MatDialogRef} from '@angular/material/dialog';
 	styleUrl: './task-form.component.scss',
 })
 export class TaskFormComponent {
+	private readonly formBuilder = inject(FormBuilder);
+	private readonly store = inject(Store) as Store<fromStore.AppState>;
+	private matDialogRef = inject(
+		MatDialogRef,
+	) as MatDialogRef<TaskFormComponent>;
+
 	public taskForm!: FormGroup;
 
 	public statusOptions = ['ToDo', 'Doing', 'Done'];
 
-	constructor(
-		private readonly formBuilder: FormBuilder,
-		private readonly store: Store,
-		private matDialogRef: MatDialogRef<TaskFormComponent>,
-	) {
+	constructor() {
 		this.taskForm = this.formBuilder.group({
 			title: this.formBuilder.control('', [Validators.required]),
 			description: this.formBuilder.control('', [Validators.required]),
