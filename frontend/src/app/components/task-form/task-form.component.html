@@ -95,7 +95,7 @@
 			[toggleable]="true"
 			[collapsed]="true"
 		>
-			@for (subtask of subtasks(); track subtask.name) {
+			@for (subtask of subtasks(); track subtask.id) {
 				<subtasks-overview [subtask]="subtask" />
 			}
 
@@ -105,7 +105,7 @@
 				pButton
 				severity="secondary"
 				variant="text"
-				class="pi pi-plus"
+				class="pi pi-add"
 				(click)="addSubtask()"
 			></button>
 		</p-panel>

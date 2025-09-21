@@ -17,7 +17,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 export class SubtasksOverviewComponent {
 	private readonly store = inject(Store);
 
-	public subtask = model.required<Subtask>();
+	public subtask = input.required<Subtask>();
 
 	constructor() {
 		effect(() => {

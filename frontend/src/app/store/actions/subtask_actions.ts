@@ -25,7 +25,7 @@ export enum SubtaskActionType {
 export class LoadSubtasks implements Action {
 	readonly type = SubtaskActionType.LOAD_SUBTASKS;
 
-	constructor(public payload: number) {} // payload = idTask
+	constructor(public payload: string | number) {} // payload = idTask
 }
 
 export class LoadSubtasksSuccess implements Action {

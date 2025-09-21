@@ -1,9 +1,11 @@
-import {AsyncPipe, NgClass, NgTemplateOutlet} from '@angular/common';
+import {AsyncPipe, JsonPipe, NgClass, NgTemplateOutlet} from '@angular/common';
 import {
 	Component,
 	ComponentRef,
 	computed,
+	effect,
 	inject,
+	Signal,
 	signal,
 	TemplateRef,
 	viewChild,
@@ -33,8 +35,10 @@ import {Menu} from 'primeng/menu';
 import {ConfirmDialog} from 'primeng/confirmdialog';
 import {ToastModule} from 'primeng/toast';
 import {SubtasksOverviewComponent} from '../subtasks-overview/subtasks-overview.component';
-import { PanelModule } from 'primeng/panel';
-import { SubtaskFormComponent } from '../subtask-form/subtask-form.component';
+import {PanelModule} from 'primeng/panel';
+import {SubtaskFormComponent} from '../subtask-form/subtask-form.component';
+import {Subtask} from 'src/app/models/subtask_models';
+import {ToggleSwitchStyle} from 'primeng/toggleswitch';
 
 @Component({
 	selector: 'task-form',
@@ -56,7 +60,8 @@ import { SubtaskFormComponent } from '../subtask-form/subtask-form.component';
 		ConfirmDialog,
 		ToastModule,
 		SubtasksOverviewComponent,
-		PanelModule
+		PanelModule,
+		JsonPipe,
 	],
 	providers: [MessageService, ConfirmationService],
 	templateUrl: './task-form.component.html',
@@ -71,7 +76,9 @@ export class TaskFormComponent {
 
 	public taskFormTemplate = viewChild<TemplateRef<any>>('taskFormTemplate');
 	public taskInfoTemplate = viewChild<TemplateRef<any>>('taskInfoTemplate');
-	public newSubtaskContainer = viewChild.required('newSubtaskContainer', { read: ViewContainerRef });
+	public newSubtaskContainer = viewChild.required('newSubtaskContainer', {
+		read: ViewContainerRef,
+	});
 
 	protected boardSelected = toSignal(
 		this.store.select(fromStore.selectBoardSelected),
@@ -88,10 +95,8 @@ export class TaskFormComponent {
 	public templateSelected = computed(() =>
 		this.isEdit() ? this.taskFormTemplate() : this.taskInfoTemplate(),
 	);
-	private taskId = computed(() => this.taskSelected()?.id ?? '');
-	public subtasks = toSignal(
-		this.store.select(fromStore.selectSubtasksByIdTask(+this.taskId())),
-	);
+	private taskId = signal<string | number | null>(null);
+	public subtasks = toSignal(this.store.select(fromStore.selectSubtasks));
 	public subtaskFormComponentRef?: ComponentRef<SubtaskFormComponent>;
 
 	public menuItems: MenuItem[] = [
@@ -124,6 +129,9 @@ export class TaskFormComponent {
 							id: this.taskSelected()?.statusId,
 							name: this.taskSelected()?.status,
 						});
+
+						this.taskId.set(task.id);
+						this.store.dispatch(new fromStore.LoadSubtasks(task.id));
 					}
 
 					this.isEdit.set(task ? false : true);
@@ -164,7 +172,7 @@ export class TaskFormComponent {
 		};
 
 		if (this.taskId()) {
-			newTaskData['id'] = this.taskId() as string;
+			newTaskData['id'] = this.taskId() as number;
 			this.store.dispatch(new fromStore.UpdateTask({...newTaskData}));
 		} else {
 			this.store.dispatch(new fromStore.AddTask({...newTaskData}));
@@ -179,7 +187,7 @@ export class TaskFormComponent {
 
 		if (!this.taskId()) return;
 
-		this.store.dispatch(new fromStore.DeleteTask(+this.taskId()));
+		this.store.dispatch(new fromStore.DeleteTask(this.taskId() as number));
 
 		this.messageService.add({
 			severity: 'info',
@@ -236,7 +244,7 @@ export class TaskFormComponent {
 			accept: () => {
 				if (!this.taskId()) return;
 
-				this.store.dispatch(new fromStore.DeleteTask(+this.taskId()));
+				this.store.dispatch(new fromStore.DeleteTask(this.taskId() as number));
 
 				this.messageService.add({
 					severity: 'info',
@@ -252,14 +260,30 @@ export class TaskFormComponent {
 	addSubtask() {
 		this.newSubtaskContainer()?.clear();
 
-		this.subtaskFormComponentRef = this.newSubtaskContainer().createComponent(SubtaskFormComponent);
+		this.subtaskFormComponentRef =
+			this.newSubtaskContainer().createComponent(SubtaskFormComponent);
+
+		this.subtaskFormComponentRef.instance.subtaskSaved.subscribe(
+			(title: string) => {
+				if (!this.taskId()) return;
+
+				const newSubtask = {
+					title,
+					isDone: false,
+					taskId: this.taskId(),
+				};
+				this.store.dispatch(new fromStore.AddSubtask(newSubtask));
+
+				this.subtaskFormComponentRef?.destroy();
+				this.subtaskFormComponentRef = undefined;
+			},
+		);
 
 		this.subtaskFormComponentRef.onDestroy(() => {
-			if(this.subtaskFormComponentRef) {
+			if (this.subtaskFormComponentRef) {
 				this.subtaskFormComponentRef.destroy();
 				this.subtaskFormComponentRef = undefined;
 			}
 		});
-
 	}
 }

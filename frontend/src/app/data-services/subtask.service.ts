@@ -12,7 +12,7 @@ export class SubtaskService {
 
 	private readonly URL = `${URL_BASE}${CONTEXT_PATH}subtask/`;
 
-	getSubtaskByIdTask(idTask: number): Observable<ApiSubtask[]> {
+	getSubtaskByIdTask(idTask: string | number): Observable<ApiSubtask[]> {
 		return this.httpClient.get<ApiSubtask[]>(`${this.URL}all/${idTask}`);
 	}
 

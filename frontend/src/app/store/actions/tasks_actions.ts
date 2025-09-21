@@ -113,7 +113,7 @@ export class UpdateTasksFail implements Action {
 export class DeleteTask implements Action {
 	readonly type = TasksActionType.DELETE_TASK;
 
-	constructor(public payload: number) {}
+	constructor(public payload: string | number) {}
 }
 
 export class DeleteTaskSuccess implements Action {

@@ -32,7 +32,7 @@ export class TaskService {
 		return this.httpClient.put<boolean>(`${this.URL}update`, task);
 	}
 
-	delete(idTask: number): Observable<any> {
+	delete(idTask: string | number): Observable<any> {
 		return this.httpClient.delete<any>(`${this.URL}delete/${idTask}`);
 	}
 
