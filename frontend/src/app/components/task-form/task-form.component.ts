@@ -83,7 +83,11 @@ export class TaskFormComponent {
 	protected boardSelected = toSignal(
 		this.store.select(fromStore.selectBoardSelected),
 	);
-	public taskForm!: FormGroup;
+	public taskForm = this.formBuilder.group({
+		title: this.formBuilder.control('', [Validators.required]),
+		description: this.formBuilder.control('', [Validators.required]),
+		status: this.formBuilder.control({id: 0, name: ''}, [Validators.required]),
+	});
 	public statusOptions = toSignal(
 		this.store.select(fromStore.selectStatusData),
 	);
@@ -109,8 +113,6 @@ export class TaskFormComponent {
 	];
 
 	constructor() {
-		this.initTaskForm();
-
 		this.store.dispatch(new fromStore.LoadStatuses());
 
 		this.store
@@ -121,13 +123,13 @@ export class TaskFormComponent {
 					if (task) {
 						this.taskSelected.set(task);
 
-						this.taskForm.get('title')?.setValue(this.taskSelected()?.title);
+						this.taskForm.get('title')?.setValue(task.title);
 						this.taskForm
 							.get('description')
-							?.setValue(this.taskSelected()?.description);
+							?.setValue(task?.description);
 						this.taskForm.get('status')?.setValue({
-							id: this.taskSelected()?.statusId,
-							name: this.taskSelected()?.status,
+							id: task.statusId,
+							name: '' + task.status,
 						});
 
 						this.taskId.set(task.id);
@@ -137,14 +139,6 @@ export class TaskFormComponent {
 					this.isEdit.set(task ? false : true);
 				},
 			});
-	}
-
-	initTaskForm() {
-		this.taskForm = this.formBuilder.group({
-			title: this.formBuilder.control('', [Validators.required]),
-			description: this.formBuilder.control('', [Validators.required]),
-			status: this.formBuilder.control('', [Validators.required]),
-		});
 	}
 
 	closeDialog(): void {
@@ -160,15 +154,18 @@ export class TaskFormComponent {
 
 		if (!this.boardSelected()) return;
 
+		const taskFormValue = this.taskForm.getRawValue();
+		if(!taskFormValue.title || !taskFormValue.description || !taskFormValue.status) return;
+
 		const newTaskData: Task = {
 			id: '',
-			title: this.taskForm.value.title,
-			description: this.taskForm.value.description,
-			statusId: this.taskForm.value.status.id,
+			title: taskFormValue.title,
+			description: taskFormValue.description,
+			statusId: taskFormValue.status.id,
 			boardId: this.boardSelected() as number,
 			countDoneSubtasks: 0,
 			totalSubtasks: 0,
-			status: this.taskForm.value.status.name,
+			status: taskFormValue.status.name,
 		};
 
 		if (this.taskId()) {
