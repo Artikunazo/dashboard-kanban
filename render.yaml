@@ -4,6 +4,7 @@ services:
   - type: web
     name: dashboard-kanban-be
     env: docker
+    buildCommand: "ls -laR"
     repo: https://github.com/Artikunazo/dashboard-kanban-v2
     dockerContext: ./backend
     dockerfilePath: Dockerfile
