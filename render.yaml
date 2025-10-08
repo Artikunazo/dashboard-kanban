@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: dashboard-kanban-be
+    env: docker
+    repo: https://github.com/Artikunazo/dashboard-kanban-v2
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: dashboard-kanban-db
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: dashboard-kanban-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: dashboard-kanban-db
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: dashboard-kanban-db
+          property: database
+    plan: free
+  - type: web
+    name: dashboard-kanban-fe
+    env: docker
+    repo: https://github.com/Artikunazo/dashboard-kanban-v2
+    dockerContext: ./frontend
+    dockerfilePath: ./frontend/Dockerfile
+    buildCommand: "npm install && npm run build:render"
+    envVars:
+      - key: API_URL
+        fromService:
+          type: web
+          name: dashboard-kanban-be
+          property: url
+    plan: free
+
+databases:
+  - name: dashboard-kanban-db
+    databaseName: kanban_db 
+    user: kanban_user 
+    plan: free
+    ipAllowList: []
