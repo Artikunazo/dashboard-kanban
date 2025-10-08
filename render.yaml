@@ -3,7 +3,7 @@
 services:
   - type: web
     name: dashboard-kanban-be
-    env: docker
+    env: shell
     buildCommand: "ls -laR"
     repo: https://github.com/Artikunazo/dashboard-kanban-v2
     dockerContext: ./backend
@@ -29,7 +29,7 @@ services:
 
   - type: web
     name: dashboard-kanban-fe
-    env: docker
+    env: shell
     repo: https://github.com/Artikunazo/dashboard-kanban-v2
     dockerContext: ./frontend
     dockerfilePath: Dockerfile
