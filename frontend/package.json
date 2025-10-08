@@ -1,5 +1,5 @@
 {
-  "name": "dashboard-kanban-v2",
+  "name": "dashboard-kanban",
   "version": "2.5.0",
   "scripts": {
     "ng": "ng",
