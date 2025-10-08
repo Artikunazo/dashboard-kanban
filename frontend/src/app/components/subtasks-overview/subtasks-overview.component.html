@@ -1,9 +1,9 @@
 <section class="subtask-container">
 	<div class="flex align-items-center gap-3">
 		<p-checkbox
-			(ngModelChange)="changed($event.checked)"
-			[ngModel]="subtask().isDone"
+			[(ngModel)]="subtask().isDone"
 			[disabled]="subtask().isDone"
+			binary="true"
 		></p-checkbox>
 		<p [subtaskDone]="subtask().isDone">
 			{{ subtask().title }}
