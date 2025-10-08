@@ -4,7 +4,7 @@ services:
     env: docker
     repo: https://github.com/Artikunazo/dashboard-kanban-v2
     dockerContext: ./backend
-    dockerfilePath: ./backend/Dockerfile
+    dockerfilePath: Dockerfile
     envVars:
       - key: DB_HOST
         fromDatabase:
@@ -28,7 +28,7 @@ services:
     env: docker
     repo: https://github.com/Artikunazo/dashboard-kanban-v2
     dockerContext: ./frontend
-    dockerfilePath: ./frontend/Dockerfile
+    dockerfilePath: Dockerfile
     buildCommand: "npm install && npm run build:render"
     envVars:
       - key: API_URL
