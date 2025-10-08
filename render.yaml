@@ -1,3 +1,5 @@
+# render.yaml - VERSIÓN CORREGIDA
+
 services:
   - type: web
     name: dashboard-kanban-be
@@ -23,13 +25,15 @@ services:
           name: dashboard-kanban-db
           property: database
     plan: free
+
   - type: web
     name: dashboard-kanban-fe
     env: docker
     repo: https://github.com/Artikunazo/dashboard-kanban-v2
     dockerContext: ./frontend
     dockerfilePath: Dockerfile
-    buildCommand: "npm install && npm run build:render"
+    # La línea 'buildCommand' se eliminó. Tu Dockerfile debe encargarse de hacer
+    # 'npm install' y 'npm run build:render' con comandos RUN.
     envVars:
       - key: API_URL
         fromService:
@@ -40,7 +44,7 @@ services:
 
 databases:
   - name: dashboard-kanban-db
-    databaseName: kanban_db 
-    user: kanban_user 
+    databaseName: kanban_db
+    user: kanban_user
     plan: free
     ipAllowList: []
