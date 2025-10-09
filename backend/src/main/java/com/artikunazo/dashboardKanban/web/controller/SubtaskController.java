@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
+@CrossOrigin(origins = "https://dashboard-kanban-two.vercel.app/", maxAge = 3600)
 @RestController
 @RequestMapping("/subtask")
 public class SubtaskController {
