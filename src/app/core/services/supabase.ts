@@ -37,4 +37,22 @@ export class SupabaseService {
       return null;
     }
   }
+
+  async createDemoBoard(visitorId: string): Promise<string | null> {
+    try {
+      // Llamamos a la función RPC pasándole el ID del visitante
+      const { data, error } = await this.supabase.rpc('create_demo_board', {
+        new_visitor_id: visitorId
+      });
+
+      if (error) throw error;
+
+      console.log('Demo board successfully generated! Board ID:', data);
+      return data;
+
+    } catch (error) {
+      console.error('Error creating demo board:', error);
+      return null;
+    }
+  }
 }
