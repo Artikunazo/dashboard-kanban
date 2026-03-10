@@ -1,8 +1,8 @@
--- 1. HABILITAR EXTENSIONES
+-- 1. EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- ==========================================
--- 2. CREACIÓN DE TABLAS
+-- 2. TABLES
 -- ==========================================
 CREATE TABLE team_members (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -50,7 +50,7 @@ CREATE TABLE subtasks (
 );
 
 -- ==========================================
--- 3. SEGURIDAD RLS (Row Level Security)
+-- 3. RLS (Row Level Security)
 -- ==========================================
 ALTER TABLE boards ENABLE ROW LEVEL SECURITY;
 ALTER TABLE columns ENABLE ROW LEVEL SECURITY;
@@ -71,7 +71,7 @@ CREATE POLICY "Visitors can manage subtasks of their boards" ON subtasks FOR ALL
 );
 
 -- ==========================================
--- 4. TRIGGER DE INACTIVIDAD (Para el Garbage Collector)
+-- 4. INACTIVITY TRIGGER
 -- ==========================================
 CREATE OR REPLACE FUNCTION update_board_timestamp() RETURNS TRIGGER AS $$
 BEGIN
@@ -84,7 +84,7 @@ CREATE TRIGGER trigger_update_board_time AFTER INSERT OR UPDATE OR DELETE ON tas
 FOR EACH ROW EXECUTE FUNCTION update_board_timestamp();
 
 -- ==========================================
--- 5. DATOS SEMILLA (Nuestro Equipo Fantasma)
+-- 5. DATA SEED
 -- ==========================================
 INSERT INTO team_members (name, avatar_url, role) VALUES 
 ('Mike Rosoft', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mike&backgroundColor=b6e3f4', 'Frontend Developer'),
@@ -93,7 +93,7 @@ INSERT INTO team_members (name, avatar_url, role) VALUES
 ('Susana Horia', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Susana&backgroundColor=f4d8e8', 'Project Manager');
 
 -- ==========================================
--- 6. LA FÁBRICA DE TABLEROS (Función RPC)
+-- 6. BOARDS FACTORY
 -- ==========================================
 CREATE OR REPLACE FUNCTION create_demo_board(new_visitor_id UUID) RETURNS UUID AS $$
 DECLARE
