@@ -1,9 +1,0 @@
-/* Override of display because mat-toolbar
-* applies display:flex by default */
-.toolbar-main {
-	display: grid;
-}
-
-.toolbar-title {
-	padding-left: 3vw;
-}

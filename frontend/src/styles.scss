@@ -1,9 +1,0 @@
-/* You can add global styles to this file, and also import other style files */
-@use "tailwindcss";
-@use "primeicons/primeicons.css";
-
-@custom-variant dark (&:where(.my-app-dark, .my-app-dark *));
-
-body.dark * {
-	@apply bg-gray-900 text-gray-100;
-}
