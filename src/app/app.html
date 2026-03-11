@@ -1,0 +1,17 @@
+<main class="min-h-screen bg-gray-900 font-sans">
+
+    @if (activeBoardId()) {
+    <app-board [boardId]="activeBoardId()!"></app-board>
+    } @else {
+    <div class="flex h-screen w-full items-center justify-center">
+        <div class="text-center space-y-4">
+            <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto">
+            </div>
+            <p class="text-blue-400 font-medium animate-pulse">Conectando base de datos...</p>
+        </div>
+    </div>
+    }
+
+</main>
+
+<router-outlet></router-outlet>

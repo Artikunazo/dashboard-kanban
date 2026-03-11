@@ -1,0 +1,41 @@
+@if (isLoading()) {
+<div class="flex h-screen items-center justify-center bg-gray-900">
+    <p class="text-xl font-semibold text-white animate-pulse">Cargando tablero...</p>
+</div>
+} @else {
+<div cdkDropListGroup class="flex h-screen w-full overflow-x-auto bg-gray-900 p-6 space-x-6">
+
+    @for (column of columns(); track column.id) {
+    <div class="flex flex-col w-80 shrink-0 bg-gray-800 rounded-xl max-h-full">
+
+        <div class="p-4 border-b border-gray-700">
+            <h2 class="text-lg font-bold text-gray-100">{{ column.title }}</h2>
+        </div>
+
+        <div cdkDropList [cdkDropListData]="tasksByColumn()[column.id]" (cdkDropListDropped)="drop($event, column.id)"
+            class="flex-1 overflow-y-auto p-4 space-y-3 min-h-[150px]"> @for (task of tasksByColumn()[column.id]; track
+            task.id) {
+
+            <div cdkDrag
+                class="bg-gray-700 p-4 rounded-lg shadow-sm hover:ring-2 hover:ring-blue-500 cursor-grab active:cursor-grabbing transition-all">
+                <h3 class="font-medium text-white mb-2">{{ task.title }}</h3>
+                <p class="text-sm text-gray-400 line-clamp-2">{{ task.description }}</p>
+
+                @if (task.assigned_to) {
+                <div class="mt-4 flex items-center gap-2">
+                    <div
+                        class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-xs text-white font-bold">
+                        {{ task.assigned_to.charAt(0) }}
+                    </div>
+                    <span class="text-xs text-gray-300">{{ task.assigned_to }}</span>
+                </div>
+                }
+            </div>
+
+            }
+        </div>
+
+    </div>
+    }
+</div>
+}
