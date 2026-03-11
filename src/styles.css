@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+.cdk-drag-placeholder {
+    @apply opacity-0;
+}
+
+.cdk-drag-preview {
+    @apply shadow-2xl scale-105 bg-gray-700 rounded-lg p-4 z-50 ring-2 ring-blue-500;
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+.cdk-drop-list-dragging .cdk-drag {
+    @apply transition-transform duration-100 ease-in-out;
+}
+
+.cdk-drag-animating {
+    @apply transition-transform duration-100 ease-out;
+}
