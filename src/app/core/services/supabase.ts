@@ -61,16 +61,14 @@ export class SupabaseService {
         .from('boards')
         .select('id')
         .eq('visitor_id', userId)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        throw error;
-      }
+      if (error) throw error;
 
       return data ? data.id : null;
 
     } catch (error) {
-      console.error('Error buscando el tablero del usuario:', error);
+      console.error('Error crítico buscando el tablero del visitante:', error);
       return null;
     }
   }
