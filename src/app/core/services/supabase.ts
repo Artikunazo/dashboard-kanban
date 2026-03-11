@@ -54,4 +54,24 @@ export class SupabaseService {
       return null;
     }
   }
+
+  async getUserBoard(userId: string): Promise<string | null> {
+    try {
+      const { data, error } = await this.supabase
+        .from('boards')
+        .select('id')
+        .eq('visitor_id', userId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      return data ? data.id : null;
+
+    } catch (error) {
+      console.error('Error buscando el tablero del usuario:', error);
+      return null;
+    }
+  }
 }

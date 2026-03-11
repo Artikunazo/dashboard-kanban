@@ -46,23 +46,42 @@ export class BoardComponent implements OnInit {
   // 4. La función que maneja la física de soltar una tarjeta
   drop(event: CdkDragDrop<Task[]>, targetColumnId: string) {
     if (event.previousContainer === event.container) {
-      // Reordenar dentro de la misma columna
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
-      // Transferir a una columna diferente
       transferArrayItem(
         event.previousContainer.data,
         event.container.data,
         event.previousIndex,
         event.currentIndex,
       );
-
-      // Actualizamos el ID de la columna en la tarea localmente
-      const movedTask = event.container.data[event.currentIndex];
-      movedTask.column_id = targetColumnId;
     }
 
-    console.log('¡Estructura actualizada localmente!');
-    // Próximo paso: Enviar esta nueva posición a Supabase
+    // 1. Creamos la "caja" para recolectar las tareas que necesitan actualización
+    const tasksToUpdate: Task[] = [];
+
+    // 2. Revisamos la columna DESTINO
+    event.container.data.forEach((task, index) => {
+      if (task.position !== index || task.column_id !== targetColumnId) {
+        task.position = index;
+        task.column_id = targetColumnId;
+        tasksToUpdate.push(task); // Almacenamos en lugar de enviar
+      }
+    });
+
+    // 3. Si hubo cambio de columna, revisamos la columna ORIGEN
+    if (event.previousContainer !== event.container) {
+      event.previousContainer.data.forEach((task, index) => {
+        if (task.position !== index) {
+          task.position = index;
+          tasksToUpdate.push(task); // Almacenamos en lugar de enviar
+        }
+      });
+    }
+
+    // 4. Disparamos UNA SOLA petición de red con todas las modificaciones
+    if (tasksToUpdate.length > 0) {
+      console.log(`Enviando ${tasksToUpdate.length} tareas a actualizar de golpe...`);
+      this.boardService.updateTasksBulk(tasksToUpdate);
+    }
   }
 }

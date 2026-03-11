@@ -12,19 +12,26 @@ import { BoardComponent } from './features/board/board';
 export class App implements OnInit {
   private supabaseService = inject(SupabaseService);
 
-  // Creamos un estado reactivo para guardar el ID
   activeBoardId = signal<string | null>(null);
 
   async ngOnInit() {
+    // 1. Obtenemos al visitante (Supabase se encarga de saber si es nuevo o recurrente)
     const user = await this.supabaseService.initializeAnonymousSession();
 
     if (user) {
-      // Pedimos el tablero
-      const boardId = await this.supabaseService.createDemoBoard(user.id);
+      console.log('Identidad del visitante confirmada:', user.id);
+
+      // 2. Preguntamos a la Base de Datos si ya le habíamos construido su tablero
+      let boardId = await this.supabaseService.getUserBoard(user.id);
 
       if (boardId) {
-        // En cuanto tenemos el ID, actualizamos el Signal.
-        // Esto le avisará al HTML que ya puede pintar el componente del Kanban.
+        console.log('Tablero recuperado desde la Base de Datos:', boardId);
+      } else {
+        console.log('Usuario sin tablero, fabricando demo board...');
+        boardId = await this.supabaseService.createDemoBoard(user.id);
+      }
+
+      if (boardId) {
         this.activeBoardId.set(boardId);
       }
     }
