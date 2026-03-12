@@ -1,11 +1,19 @@
 {
-  "printWidth": 100,
+  "printWidth": 80,
+  "tabWidth": 2,
+  "useTabs": true,
   "singleQuote": true,
+  "trailingComma": "all",
+  "bracketSpacing": false,
+  "arrowParens": "always",
+  "proseWrap": "always",
   "overrides": [
     {
-      "files": "*.html",
+      "files": [
+        "**/*.html"
+      ],
       "options": {
-        "parser": "angular"
+        "printWidth": 60
       }
     }
   ]
