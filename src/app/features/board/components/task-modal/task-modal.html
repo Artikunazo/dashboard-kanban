@@ -1,0 +1,71 @@
+@if (isOpen()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" (click)="onClose()">
+
+    <div class="bg-gray-800 w-full max-w-lg rounded-xl shadow-2xl p-6 border border-gray-700 m-4"
+        (click)="$event.stopPropagation()">
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-white">
+                {{ mode() === 'create' ? 'New Task' : task()?.title }}
+            </h2>
+            <button (click)="onClose()" class="text-gray-400 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        @if (mode() === 'create') {
+        <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Title</label>
+                <input type="text" formControlName="title" placeholder="e.g., Configure database..."
+                    class="w-full bg-gray-900 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 p-2.5 outline-none transition-all"
+                    autofocus>
+                @if (taskForm.controls.title.touched && taskForm.controls.title.invalid) {
+                <span class="text-xs text-red-400 mt-1 block">Title must be at least 2 characters.</span>
+                }
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Description</label>
+                <textarea formControlName="description" rows="3" placeholder="Task details..."
+                    class="w-full bg-gray-900 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 p-2.5 outline-none transition-all resize-none"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button type="button" (click)="onClose()"
+                    class="px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" [disabled]="taskForm.invalid"
+                    class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors shadow-lg">
+                    Create Task
+                </button>
+            </div>
+        </form>
+        }
+
+        @if (mode() === 'view' && task()) {
+        <div class="space-y-4">
+            <div>
+                <h3 class="text-sm font-medium text-gray-400 mb-1">Description</h3>
+                <p
+                    class="text-gray-200 bg-gray-900/50 p-3 rounded-lg border border-gray-700 min-h-[4rem] whitespace-pre-wrap">
+                    {{ task()?.description || 'No detailed description provided.' }}
+                </p>
+            </div>
+
+            <div class="pt-4 border-t border-gray-700 mt-6">
+                <h3 class="text-sm font-medium text-gray-400 mb-2">Subtasks</h3>
+                <div class="text-center py-4 border-2 border-dashed border-gray-700 rounded-lg text-gray-500 text-sm">
+                    Subtask management coming soon
+                </div>
+            </div>
+        </div>
+        }
+
+    </div>
+</div>
+}

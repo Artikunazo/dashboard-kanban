@@ -2,11 +2,13 @@ import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { BoardService } from './services/board';
 import { Task, Column } from './models/board.models';
+// 1. Importamos el Modal y su tipo
+import { TaskModal, ModalMode } from './components/task-modal/task-modal';
 
 @Component({
   selector: 'app-board',
   standalone: true,
-  imports: [DragDropModule],
+  imports: [DragDropModule, TaskModal],
   templateUrl: './board.html'
 })
 export class BoardComponent implements OnInit {
@@ -15,9 +17,13 @@ export class BoardComponent implements OnInit {
 
   isLoading = signal<boolean>(true);
   columns = signal<Column[]>([]);
-
-  // ColumndId, Tasks of column
   tasksByColumn = signal<Record<string, Task[]>>({});
+
+  // 3. Estados reactivos para controlar el Modal
+  isModalOpen = signal<boolean>(false);
+  modalMode = signal<ModalMode>('create');
+  selectedTask = signal<Task | null>(null);
+  activeColumnId = signal<string | null>(null);
 
   async ngOnInit() {
     await this.loadBoardData();
@@ -82,6 +88,46 @@ export class BoardComponent implements OnInit {
     if (tasksToUpdate.length > 0) {
       console.log(`Enviando ${tasksToUpdate.length} tareas a actualizar de golpe...`);
       this.boardService.updateTasksBulk(tasksToUpdate);
+    }
+  }
+
+  openCreateModal(columnId: string) {
+    this.activeColumnId.set(columnId);
+    this.modalMode.set('create');
+    this.selectedTask.set(null);
+    this.isModalOpen.set(true);
+  }
+
+  openViewModal(task: Task) {
+    this.selectedTask.set(task);
+    this.modalMode.set('view');
+    this.isModalOpen.set(true);
+  }
+
+  closeModal() {
+    this.isModalOpen.set(false);
+    this.activeColumnId.set(null);
+    this.selectedTask.set(null);
+  }
+
+  // 5. El método que guarda la tarea en BD y actualiza la pantalla
+  async onSaveTask(taskData: Partial<Task>) {
+    // Calculamos en qué posición debe ir (al final de la lista actual)
+    const columnId = taskData.column_id!;
+    const currentTasks = this.tasksByColumn()[columnId] || [];
+    taskData.position = currentTasks.length;
+
+    // Llamamos a Supabase
+    const newTask = await this.boardService.createTask(taskData);
+
+    if (newTask) {
+      // Si se guardó con éxito, actualizamos nuestro estado local (Signal)
+      this.tasksByColumn.update(prev => {
+        const updated = { ...prev };
+        updated[columnId] = [...(updated[columnId] || []), newTask];
+        return updated;
+      });
+      console.log('Tarea creada con éxito');
     }
   }
 }

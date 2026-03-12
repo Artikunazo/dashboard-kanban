@@ -78,4 +78,21 @@ export class BoardService {
       return false;
     }
   }
+
+  async createTask(taskData: Partial<Task>): Promise<Task | null> {
+    try {
+      const { data, error } = await this.supabase
+        .from('tasks')
+        .insert([taskData])
+        .select() // Importante: pedimos que devuelva la tarea insertada
+        .single();
+
+      if (error) throw error;
+      return data;
+
+    } catch (error) {
+      console.error('Error al crear la tarea:', error);
+      return null;
+    }
+  }
 }
