@@ -1,21 +1,24 @@
 export interface Column {
-    id: string;
-    board_id: string;
-    title: string;
-    position: number;
+	id: string;
+	board_id: string;
+	title: string;
+	position: number;
 }
 
 export interface Task {
-    id: string;
-    column_id: string;
-    title: string;
-    description: string;
-    position: number;
-    assigned_to: string;
-    avatar_url?: string;
+	id: string;
+	column_id: string;
+	position: number;
+	title: string;
+	description?: string;
+	assignee_id?: string;
+	assignee?: {
+		name: string;
+		avatar_url?: string;
+	};
 }
 
 export interface BoardData {
-    columns: Column[];
-    tasks: Task[];
+	columns: Column[];
+	tasks: Task[];
 }

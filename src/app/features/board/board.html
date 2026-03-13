@@ -33,27 +33,39 @@
 			<div
 				cdkDrag
 				(click)="openViewModal(task)"
-				class="bg-gray-700 p-4 rounded-lg shadow-sm hover:ring-2 hover:ring-blue-500 cursor-grab active:cursor-grabbing transition-all"
+				class="bg-gray-700 p-4 rounded-lg shadow-sm hover:ring-2 hover:ring-blue-500 cursor-grab active:cursor-grabbing transition-all flex flex-col min-h-[120px] group"
 			>
-				<h3 class="font-medium text-white mb-2">
-					{{ task.title }}
-				</h3>
-				<p class="text-sm text-gray-400 line-clamp-2">
-					{{ task.description }}
-				</p>
-
-				@if (task.assigned_to) {
-				<div class="mt-4 flex items-center gap-2">
-					<div
-						class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-xs text-white font-bold"
+				<div class="flex-1">
+					<h3
+						class="font-medium text-white mb-2 group-hover:text-blue-400 transition-colors"
 					>
-						{{ task.assigned_to.charAt(0) }}
-					</div>
-					<span class="text-xs text-gray-300"
-						>{{ task.assigned_to }}</span
-					>
+						{{ task.title }}
+					</h3>
+					<p class="text-sm text-gray-400 line-clamp-2">
+						{{ task.description }}
+					</p>
 				</div>
-				}
+
+				<div
+					class="mt-4 flex items-center justify-end min-h-[1.75rem]"
+				>
+					@if (task.assignee) { @if
+					(task.assignee.avatar_url) {
+					<img
+						[src]="task.assignee.avatar_url"
+						[alt]="task.assignee.name"
+						class="w-7 h-7 rounded-full object-cover border-2 border-gray-800 shadow-sm"
+						[title]="task.assignee.name"
+					/>
+					} @else {
+					<div
+						class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-xs text-white font-bold border-2 border-gray-800 shadow-sm"
+						[title]="task.assignee.name"
+					>
+						{{ task.assignee.name.charAt(0).toUpperCase() }}
+					</div>
+					} }
+				</div>
 			</div>
 
 			}
