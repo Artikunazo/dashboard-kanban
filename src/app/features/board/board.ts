@@ -72,18 +72,17 @@ export class BoardComponent implements OnInit {
 	private async loadBoardData() {
 		this.isLoading.set(true);
 
-		// Load all boards list
+		// Cargamos la lista para el dropdown primero
 		const boardsList = await this.boardService.getAllUserBoards();
 		this.userBoards.set(boardsList);
 
+		// Luego el resto de los detalles
 		const boardDetails = await this.boardService.getBoardDetails(
 			this.boardId(),
 		);
 		if (boardDetails) {
-			// Ajusta 'title' si en tu base de datos la columna se llama 'name'
-			this.boardTitle.set(boardDetails.title || 'Mi Tablero Kanban');
+			this.boardTitle.set(boardDetails.title);
 		}
-
 		const data = await this.boardService.getFullBoard(this.boardId());
 
 		if (data) {
@@ -232,9 +231,14 @@ export class BoardComponent implements OnInit {
 			this.boardId(),
 			newTitle,
 		);
+
 		if (success) {
 			this.boardTitle.set(newTitle);
-			this.loadBoardData();
+
+			// RE-SINCRONIZACIÓN: Refrescamos la lista de tableros para que el dropdown
+			// muestre el nuevo nombre inmediatamente.
+			const updatedBoards = await this.boardService.getAllUserBoards();
+			this.userBoards.set(updatedBoards);
 		}
 		this.isEditingTitle.set(false);
 	}
