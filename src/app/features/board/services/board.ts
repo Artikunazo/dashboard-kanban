@@ -224,4 +224,19 @@ export class BoardService {
 			return false;
 		}
 	}
+
+	async deleteTask(taskId: string): Promise<boolean> {
+		try {
+			const {error} = await this.supabase
+				.from('tasks')
+				.delete()
+				.eq('id', taskId);
+
+			if (error) throw error;
+			return true;
+		} catch (error) {
+			console.error('Error deleting task:', error);
+			return false;
+		}
+	}
 }

@@ -281,4 +281,24 @@ export class BoardComponent implements OnInit {
 			this.boardChanged.emit(selectedId);
 		}
 	}
+
+	async onDeleteTask() {
+		if (!this.selectedTask()) return;
+
+		const taskId = this.selectedTask()!.id;
+		const columnId = this.selectedTask()!.column_id;
+
+		const success = await this.boardService.deleteTask(taskId);
+
+		if (success) {
+			// Actualizamos el estado local removiendo la tarea del Signal
+			this.tasksByColumn.update((prev) => {
+				const updated = {...prev};
+				updated[columnId] = updated[columnId].filter((t) => t.id !== taskId);
+				return updated;
+			});
+			console.log('Task deleted successfully');
+			this.closeModal();
+		}
+	}
 }

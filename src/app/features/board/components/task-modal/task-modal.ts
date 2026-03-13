@@ -25,6 +25,7 @@ export class TaskModal {
 	closeModal = output<void>();
 	saveTask = output<Partial<Task>>();
 	requestEdit = output<void>();
+	deleteTaskRequested = output<void>();
 
 	// Formulario Reactivo
 	private fb = inject(NonNullableFormBuilder);
@@ -66,5 +67,12 @@ export class TaskModal {
 		});
 
 		this.onClose();
+	}
+
+	onDelete() {
+		if (window.confirm('Are you sure you want to delete this task?')) {
+			this.deleteTaskRequested.emit();
+			this.onClose(); // Cerramos el modal tras emitir
+		}
 	}
 }
