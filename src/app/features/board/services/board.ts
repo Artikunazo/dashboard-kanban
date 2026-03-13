@@ -209,4 +209,19 @@ export class BoardService {
 			return [];
 		}
 	}
+
+	async updateTask(taskId: string, updates: Partial<Task>): Promise<boolean> {
+		try {
+			const {error} = await this.supabase
+				.from('tasks')
+				.update(updates)
+				.eq('id', taskId);
+
+			if (error) throw error;
+			return true;
+		} catch (error) {
+			console.error('Error updating task:', error);
+			return false;
+		}
+	}
 }

@@ -171,22 +171,50 @@ export class BoardComponent implements OnInit {
 
 	// 5. El método que guarda la tarea en BD y actualiza la pantalla
 	async onSaveTask(taskData: Partial<Task>) {
-		// Calculamos en qué posición debe ir (al final de la lista actual)
-		const columnId = taskData.column_id!;
-		const currentTasks = this.tasksByColumn()[columnId] || [];
-		taskData.position = currentTasks.length;
+		// CASO 1: MODO EDICIÓN
+		if (this.modalMode() === 'edit' && this.selectedTask()) {
+			const taskId = this.selectedTask()!.id;
+			const columnId = this.selectedTask()!.column_id;
 
-		// Llamamos a Supabase
-		const newTask = await this.boardService.createTask(taskData);
-
-		if (newTask) {
-			// Si se guardó con éxito, actualizamos nuestro estado local (Signal)
-			this.tasksByColumn.update((prev) => {
-				const updated = {...prev};
-				updated[columnId] = [...(updated[columnId] || []), newTask];
-				return updated;
+			const success = await this.boardService.updateTask(taskId, {
+				title: taskData.title,
+				description: taskData.description,
 			});
-			console.log('Tarea creada con éxito');
+
+			if (success) {
+				// Actualizamos el Signal local para no tener que recargar la base de datos
+				this.tasksByColumn.update((prev) => {
+					const updated = {...prev};
+					const taskIndex = updated[columnId].findIndex((t) => t.id === taskId);
+
+					if (taskIndex > -1) {
+						// Fusionamos la tarea vieja con los datos nuevos
+						updated[columnId][taskIndex] = {
+							...updated[columnId][taskIndex],
+							title: taskData.title!,
+							description: taskData.description,
+						};
+					}
+					return updated;
+				});
+			}
+		}
+
+		// CASO 2: MODO CREACIÓN (Tu código anterior)
+		else {
+			const columnId = taskData.column_id!;
+			const currentTasks = this.tasksByColumn()[columnId] || [];
+			taskData.position = currentTasks.length;
+
+			const newTask = await this.boardService.createTask(taskData);
+
+			if (newTask) {
+				this.tasksByColumn.update((prev) => {
+					const updated = {...prev};
+					updated[columnId] = [...(updated[columnId] || []), newTask];
+					return updated;
+				});
+			}
 		}
 	}
 
