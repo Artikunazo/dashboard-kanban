@@ -96,4 +96,117 @@ export class BoardService {
 			return null;
 		}
 	}
+
+	async getBoardDetails(boardId: string): Promise<any | null> {
+		try {
+			const {data, error} = await this.supabase
+				.from('boards')
+				.select('*')
+				.eq('id', boardId)
+				.single();
+
+			if (error) throw error;
+			return data;
+		} catch (error) {
+			console.error('Error obteniendo detalles del tablero:', error);
+			return null;
+		}
+	}
+
+	async updateBoardTitle(boardId: string, newTitle: string): Promise<boolean> {
+		try {
+			const {error} = await this.supabase
+				.from('boards')
+				.update({title: newTitle})
+				.eq('id', boardId);
+
+			if (error) throw error;
+			return true;
+		} catch (error) {
+			console.error('Error updating board title:', error);
+			return false;
+		}
+	}
+
+	// Delete board (CASCADE will handle columns and tasks if configured in DB)
+	async deleteBoard(boardId: string): Promise<boolean> {
+		try {
+			const {error} = await this.supabase
+				.from('boards')
+				.delete()
+				.eq('id', boardId);
+
+			if (error) throw error;
+			return true;
+		} catch (error) {
+			console.error('Error deleting board:', error);
+			return false;
+		}
+	}
+
+	// Create a new board with default columns
+	async createBoardWithDefaults(
+		title: string = 'New Project',
+	): Promise<string | null> {
+		try {
+			// 1. Obtenemos al visitante actual directamente de la sesión
+			const {
+				data: {session},
+			} = await this.supabase.auth.getSession();
+			const visitorId = session?.user?.id;
+
+			if (!visitorId) throw new Error('No active session found');
+
+			// 2. Creamos el tablero
+			const {data: board, error: boardError} = await this.supabase
+				.from('boards')
+				.insert([{visitor_id: visitorId, title}])
+				.select('id')
+				.single();
+
+			if (boardError) throw boardError;
+
+			// 3. Preparamos las columnas por defecto en inglés
+			const defaultColumns = [
+				{board_id: board.id, title: 'To Do', position: 0},
+				{board_id: board.id, title: 'In Progress', position: 1},
+				{board_id: board.id, title: 'Done', position: 2},
+			];
+
+			// 4. Insertamos las columnas masivamente
+			const {error: colsError} = await this.supabase
+				.from('columns')
+				.insert(defaultColumns);
+
+			if (colsError) throw colsError;
+
+			return board.id; // Devolvemos el ID del nuevo tablero listo para usarse
+		} catch (error) {
+			console.error('Error creating board with defaults:', error);
+			return null;
+		}
+	}
+
+	async getAllUserBoards(): Promise<{id: string; title: string}[]> {
+		try {
+			const {
+				data: {session},
+			} = await this.supabase.auth.getSession();
+			const visitorId = session?.user?.id;
+
+			if (!visitorId) return [];
+
+			const {data, error} = await this.supabase
+				.from('boards')
+				.select('id, title')
+				.eq('visitor_id', visitorId)
+				.order('created_at', {ascending: false}); // Los más nuevos primero
+
+			if (error) throw error;
+			return data || [];
+		} catch (error) {
+			console.error('Error fetching user boards:', error);
+			return [];
+		}
+	}
 }
