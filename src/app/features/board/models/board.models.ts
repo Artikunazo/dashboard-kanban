@@ -2,13 +2,13 @@ export interface Column {
 	id: string;
 	board_id: string;
 	title: string;
-	position: number;
+	position: string;
 }
 
 export interface Task {
 	id: string;
 	column_id: string;
-	position: number;
+	position: string;
 	title: string;
 	description?: string;
 	assignee_id?: string;
