@@ -4,7 +4,7 @@ import { TaskRepository } from '../domain/repositories/task.repository';
 import { Column, Task } from '../models/board.models';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { ModalMode } from '../components/task-modal/task-modal';
-import { LexoRank } from 'lexorank';
+import { LexoRank } from '@dalet-oss/lexorank';
 
 @Injectable({
   providedIn: 'root'

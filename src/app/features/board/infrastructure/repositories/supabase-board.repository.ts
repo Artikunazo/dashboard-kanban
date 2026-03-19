@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BoardRepository } from '../../domain/repositories/board.repository';
 import { SupabaseService } from '../../../../core/services/supabase';
 import { BoardData } from '../../models/board.models';
-import { LexoRank } from 'lexorank';
+import { LexoRank } from '@dalet-oss/lexorank';
 
 @Injectable({
   providedIn: 'root'
