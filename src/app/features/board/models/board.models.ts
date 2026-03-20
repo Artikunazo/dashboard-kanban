@@ -1,3 +1,10 @@
+export interface TeamMember {
+	id: string;
+	name: string;
+	avatar_url?: string;
+	role?: string;
+}
+
 export interface Column {
 	id: string;
 	board_id: string;
@@ -11,11 +18,8 @@ export interface Task {
 	position: string;
 	title: string;
 	description?: string;
-	assignee_id?: string;
-	assignee?: {
-		name: string;
-		avatar_url?: string;
-	};
+	assignee_id?: string | null;
+	assignee?: TeamMember;
 }
 
 export interface BoardData {

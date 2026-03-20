@@ -23,10 +23,11 @@ export class BoardComponent {
 	isLoading = this.facade.isLoading;
 	columns = this.facade.columns;
 	tasksByColumn = this.facade.tasksByColumn;
-	isModalOpen = this.facade.isModalOpen;
-	modalMode = this.facade.modalMode;
-	selectedTask = this.facade.selectedTask;
-	activeColumnId = this.facade.activeColumnId;
+	readonly isModalOpen = () => this.facade.isModalOpen();
+	readonly modalMode = this.facade.modalMode;
+	readonly selectedTask = () => this.facade.selectedTask();
+	readonly activeColumnId = () => this.facade.activeColumnId();
+	readonly teamMembers = () => this.facade.teamMembers();
 	boardTitle = this.facade.boardTitle;
 	isEditingTitle = this.facade.isEditingTitle;
 	userBoards = this.facade.userBoards;

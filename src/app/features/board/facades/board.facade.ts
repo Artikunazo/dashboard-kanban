@@ -1,7 +1,9 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { BoardRepository } from '../domain/repositories/board.repository';
 import { TaskRepository } from '../domain/repositories/task.repository';
-import { Column, Task } from '../models/board.models';
+import { TeamMemberRepository } from '../domain/repositories/team-member.repository';
+import { SupabaseTeamMemberRepository } from '../infrastructure/repositories/supabase-team-member.repository';
+import { Column, Task, TeamMember } from '../models/board.models';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { ModalMode } from '../components/task-modal/task-modal';
 import { LexoRank } from '@dalet-oss/lexorank';
@@ -14,6 +16,7 @@ import { InputValidationService } from '../../../core/services/input-validation.
 export class BoardFacade {
   private boardRepo = inject(BoardRepository);
   private taskRepo = inject(TaskRepository);
+  private teamMemberRepo = inject(SupabaseTeamMemberRepository);
   private rateLimiter = inject(RateLimiterService);
 
   // State Signals
@@ -29,6 +32,7 @@ export class BoardFacade {
   boardTitle = signal<string>('Cargando tablero...');
   isEditingTitle = signal<boolean>(false);
   userBoards = signal<{id: string; title: string}[]>([]);
+  teamMembers = signal<TeamMember[]>([]);
 
   /** Non-null when an action has been rate-limited; shown as banner in the template. */
   rateLimitError = signal<string | null>(null);
@@ -40,15 +44,20 @@ export class BoardFacade {
     this.currentBoardId = boardId;
     this.isLoading.set(true);
 
-    const boardsList = await this.boardRepo.getAllUserBoards();
-    this.userBoards.set(boardsList);
+    const [boardsList, boardDetails, data, members] = await Promise.all([
+      this.boardRepo.getAllUserBoards(),
+      this.boardRepo.getBoardDetails(boardId),
+      this.boardRepo.getFullBoard(boardId),
+      this.teamMemberRepo.getAll(),
+    ]);
 
-    const boardDetails = await this.boardRepo.getBoardDetails(boardId);
+    this.userBoards.set(boardsList);
+    this.teamMembers.set(members);
+
     if (boardDetails) {
       this.boardTitle.set(boardDetails.title);
     }
 
-    const data = await this.boardRepo.getFullBoard(boardId);
     if (data) {
       this.columns.set(data.columns);
 
@@ -145,6 +154,7 @@ export class BoardFacade {
       const success = await this.taskRepo.updateTask(taskId, {
         title: taskData.title,
         description: taskData.description,
+        assignee_id: taskData.assignee_id ?? null,
       });
 
       if (success) {
@@ -152,10 +162,13 @@ export class BoardFacade {
           const updated = {...prev};
           const taskIndex = updated[columnId].findIndex((t) => t.id === taskId);
           if (taskIndex > -1) {
+            const member = this.teamMembers().find(m => m.id === taskData.assignee_id) ?? undefined;
             updated[columnId][taskIndex] = {
               ...updated[columnId][taskIndex],
               title: taskData.title!,
               description: taskData.description,
+              assignee_id: taskData.assignee_id ?? null,
+              assignee: member,
             };
           }
           return updated;

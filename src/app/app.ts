@@ -3,6 +3,8 @@ import { RouterOutlet } from '@angular/router';
 import { SupabaseService } from './core/services/supabase';
 import { BoardComponent } from './features/board/board';
 
+const BOARD_STORAGE_KEY = 'active_board_id';
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -15,25 +17,38 @@ export class App implements OnInit {
   activeBoardId = signal<string | null>(null);
 
   async ngOnInit() {
-    // 1. Obtenemos al visitante (Supabase se encarga de saber si es nuevo o recurrente)
     const user = await this.supabaseService.initializeAnonymousSession();
 
     if (user) {
-      console.log('Identidad del visitante confirmada:', user.id);
+      // 1. Try to restore the last active board from localStorage
+      const savedBoardId = localStorage.getItem(BOARD_STORAGE_KEY);
 
-      // 2. Preguntamos a la Base de Datos si ya le habíamos construido su tablero
-      let boardId = await this.supabaseService.getUserBoard(user.id);
+      let boardId: string | null = savedBoardId;
 
-      if (boardId) {
-        console.log('Tablero recuperado desde la Base de Datos:', boardId);
+      if (!boardId) {
+        // 2. No saved board — check if the user already has one in the DB
+        boardId = await this.supabaseService.getUserBoard(user.id);
+
+        if (boardId) {
+          console.log('Board recovered from database:', boardId);
+        } else {
+          // 3. First visit — create a demo board
+          console.log('New user, creating demo board...');
+          boardId = await this.supabaseService.createDemoBoard(user.id);
+        }
       } else {
-        console.log('Usuario sin tablero, fabricando demo board...');
-        boardId = await this.supabaseService.createDemoBoard(user.id);
+        console.log('Board restored from localStorage:', boardId);
       }
 
       if (boardId) {
         this.activeBoardId.set(boardId);
+        localStorage.setItem(BOARD_STORAGE_KEY, boardId);
       }
     }
+  }
+
+  onBoardChanged(boardId: string) {
+    this.activeBoardId.set(boardId);
+    localStorage.setItem(BOARD_STORAGE_KEY, boardId);
   }
 }

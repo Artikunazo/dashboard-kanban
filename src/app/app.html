@@ -2,7 +2,7 @@
 	@if (activeBoardId()) {
 	<app-board
 		[boardId]="activeBoardId()!"
-		(boardChanged)="activeBoardId.set($event)"
+		(boardChanged)="onBoardChanged($event)"
 	></app-board>
 	} @else {
 	<div
