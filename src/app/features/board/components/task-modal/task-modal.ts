@@ -6,23 +6,24 @@ import {
 } from '@angular/forms';
 import {Task} from '../../models/board.models';
 import {InputValidationService} from '../../../../core/services/input-validation.service';
+import {IconClose} from '../../../../shared/components/icons/icon-close';
+import {IconTrash} from '../../../../shared/components/icons/icon-trash';
+import {IconEdit} from '../../../../shared/components/icons/icon-edit';
 
 export type ModalMode = 'create' | 'view' | 'edit';
 
 @Component({
 	selector: 'app-task-modal',
 	standalone: true,
-	imports: [ReactiveFormsModule],
+	imports: [ReactiveFormsModule, IconClose, IconTrash, IconEdit],
 	templateUrl: './task-modal.html',
 })
 export class TaskModal {
-	// Inputs reactivos modernos
 	isOpen = input.required<boolean>();
 	mode = input.required<ModalMode>();
 	task = input<Task | null>(null);
 	columnId = input<string | null>(null);
 
-	// Outputs modernos
 	closeModal = output<void>();
 	saveTask = output<Partial<Task>>();
 	requestEdit = output<void>();
@@ -93,7 +94,6 @@ export class TaskModal {
 		}
 	}
 
-	// Helper getters for template error display
 	get titleErrors() {
 		return this.taskForm.controls.title;
 	}
