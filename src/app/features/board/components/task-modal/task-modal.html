@@ -47,10 +47,28 @@
 				<input
 					type="text"
 					formControlName="title"
-					placeholder="e.g., Configure database..."
+					placeholder="e.g., Configure the database..."
+					maxlength="100"
 					class="w-full bg-gray-900 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 p-2.5 outline-none transition-all"
+					[class.border-red-500]="titleErrors.invalid && titleErrors.touched"
 					autofocus
 				/>
+				@if (titleErrors.touched && titleErrors.errors) {
+				<div class="mt-1 space-y-0.5">
+					@if (titleErrors.errors['required']) {
+					<p class="text-xs text-red-400">Title is required.</p>
+					}
+					@if (titleErrors.errors['minlength']) {
+					<p class="text-xs text-red-400">Minimum 2 characters.</p>
+					}
+					@if (titleErrors.errors['maxlength']) {
+					<p class="text-xs text-red-400">Maximum 100 characters.</p>
+					}
+					@if (titleErrors.errors['noHtml']) {
+					<p class="text-xs text-red-400">HTML tags (&lt; &gt;) are not allowed.</p>
+					}
+				</div>
+				}
 			</div>
 
 			<div>
@@ -62,8 +80,20 @@
 					formControlName="description"
 					rows="4"
 					placeholder="Task details..."
+					maxlength="1000"
 					class="w-full bg-gray-900 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 p-2.5 outline-none transition-all resize-none"
+					[class.border-red-500]="descriptionErrors.invalid && descriptionErrors.touched"
 				></textarea>
+				@if (descriptionErrors.touched && descriptionErrors.errors) {
+				<div class="mt-1 space-y-0.5">
+					@if (descriptionErrors.errors['maxlength']) {
+					<p class="text-xs text-red-400">Maximum 1000 characters.</p>
+					}
+					@if (descriptionErrors.errors['noHtml']) {
+					<p class="text-xs text-red-400">HTML tags (&lt; &gt;) are not allowed.</p>
+					}
+				</div>
+				}
 			</div>
 
 			<div class="flex justify-end gap-3 mt-6">
@@ -77,10 +107,9 @@
 				<button
 					type="submit"
 					[disabled]="taskForm.invalid"
-					class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white shadow-lg transition-all"
+					class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white shadow-lg transition-all"
 				>
-					{{ mode() === 'create' ? 'Create Task' :
-					'SaveChanges' }}
+					{{ mode() === 'create' ? 'Create Task' : 'Save Changes' }}
 				</button>
 			</div>
 		</form>
@@ -90,13 +119,12 @@
 				<h3
 					class="text-sm font-medium text-gray-400 mb-2 uppercase tracking-wider"
 				>
-					Description
+					Descripción
 				</h3>
 				<p
 					class="text-gray-200 bg-gray-900/50 p-4 rounded-lg border border-gray-700 min-h-[100px] whitespace-pre-wrap leading-relaxed"
 				>
-					{{ task()?.description ||
-					'Nodetaileddescriptionprovided.' }}
+					{{ task()?.description || 'No detailed description provided.' }}
 				</p>
 			</div>
 
@@ -104,8 +132,7 @@
 				class="flex justify-between items-center pt-4 border-t border-gray-700"
 			>
 				<span class="text-xs text-gray-500 italic"
-					>Created in: {{ (task()?.column_id || 'Unknown
-					Column') }}</span
+					>Column: {{ (task()?.column_id || 'Unknown') }}</span
 				>
 
 				<button

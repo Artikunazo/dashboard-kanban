@@ -5,6 +5,8 @@ import { Column, Task } from '../models/board.models';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { ModalMode } from '../components/task-modal/task-modal';
 import { LexoRank } from '@dalet-oss/lexorank';
+import { RateLimiterService } from '../../../core/services/rate-limiter.service';
+import { InputValidationService } from '../../../core/services/input-validation.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,20 +14,24 @@ import { LexoRank } from '@dalet-oss/lexorank';
 export class BoardFacade {
   private boardRepo = inject(BoardRepository);
   private taskRepo = inject(TaskRepository);
+  private rateLimiter = inject(RateLimiterService);
 
   // State Signals
   isLoading = signal<boolean>(true);
   columns = signal<Column[]>([]);
   tasksByColumn = signal<Record<string, Task[]>>({});
-  
+
   isModalOpen = signal<boolean>(false);
   modalMode = signal<ModalMode>('create');
   selectedTask = signal<Task | null>(null);
   activeColumnId = signal<string | null>(null);
-  
+
   boardTitle = signal<string>('Cargando tablero...');
   isEditingTitle = signal<boolean>(false);
   userBoards = signal<{id: string; title: string}[]>([]);
+
+  /** Non-null when an action has been rate-limited; shown as banner in the template. */
+  rateLimitError = signal<string | null>(null);
 
   // Current Board ID tracking
   private currentBoardId: string | null = null;
@@ -127,6 +133,10 @@ export class BoardFacade {
     this.selectedTask.set(null);
   }
 
+  dismissRateLimitError() {
+    this.rateLimitError.set(null);
+  }
+
   async saveTask(taskData: Partial<Task>) {
     if (this.modalMode() === 'edit' && this.selectedTask()) {
       const taskId = this.selectedTask()!.id;
@@ -152,9 +162,15 @@ export class BoardFacade {
         });
       }
     } else {
+      // --- Rate limit check ---
+      if (!this.rateLimiter.canPerform('create-task')) {
+        this.rateLimitError.set(this.rateLimiter.getErrorMessage('create-task'));
+        return;
+      }
+
       const columnId = taskData.column_id!;
       const currentTasks = this.tasksByColumn()[columnId] || [];
-      
+
       if (currentTasks.length === 0) {
         taskData.position = LexoRank.middle().toString();
       } else {
@@ -202,18 +218,20 @@ export class BoardFacade {
   }
 
   async saveBoardTitle(newTitle: string) {
-    if (!this.currentBoardId || !newTitle.trim() || newTitle === this.boardTitle()) {
+    const sanitized = InputValidationService.sanitize(newTitle, 100);
+
+    if (!this.currentBoardId || !sanitized || sanitized === this.boardTitle()) {
       this.isEditingTitle.set(false);
       return;
     }
 
     const success = await this.boardRepo.updateBoardTitle(
       this.currentBoardId,
-      newTitle,
+      sanitized,
     );
 
     if (success) {
-      this.boardTitle.set(newTitle);
+      this.boardTitle.set(sanitized);
       const updatedBoards = await this.boardRepo.getAllUserBoards();
       this.userBoards.set(updatedBoards);
     }
@@ -226,8 +244,16 @@ export class BoardFacade {
   }
 
   async createBoardWithDefaults(title: string): Promise<string | null> {
+    // --- Rate limit check ---
+    if (!this.rateLimiter.canPerform('create-board')) {
+      this.rateLimitError.set(this.rateLimiter.getErrorMessage('create-board'));
+      return null;
+    }
+
+    const sanitizedTitle = InputValidationService.sanitize(title, 100) || 'New Project';
+
     this.isLoading.set(true);
-    const newBoardId = await this.boardRepo.createBoardWithDefaults(title);
+    const newBoardId = await this.boardRepo.createBoardWithDefaults(sanitizedTitle);
     if (!newBoardId) {
       this.isLoading.set(false);
     }

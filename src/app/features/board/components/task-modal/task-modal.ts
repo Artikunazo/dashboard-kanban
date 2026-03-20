@@ -5,13 +5,14 @@ import {
 	Validators,
 } from '@angular/forms';
 import {Task} from '../../models/board.models';
+import {InputValidationService} from '../../../../core/services/input-validation.service';
 
 export type ModalMode = 'create' | 'view' | 'edit';
 
 @Component({
 	selector: 'app-task-modal',
 	standalone: true,
-	imports: [ReactiveFormsModule], // El estándar estable de la industria
+	imports: [ReactiveFormsModule],
 	templateUrl: './task-modal.html',
 })
 export class TaskModal {
@@ -27,11 +28,25 @@ export class TaskModal {
 	requestEdit = output<void>();
 	deleteTaskRequested = output<void>();
 
-	// Formulario Reactivo
+	// Formulario Reactivo con validadores de seguridad
 	private fb = inject(NonNullableFormBuilder);
 	taskForm = this.fb.group({
-		title: ['', [Validators.required, Validators.minLength(2)]],
-		description: [''],
+		title: [
+			'',
+			[
+				Validators.required,
+				Validators.minLength(2),
+				InputValidationService.maxLengthTrimmed(100),
+				InputValidationService.noHtmlValidator,
+			],
+		],
+		description: [
+			'',
+			[
+				InputValidationService.maxLengthTrimmed(1000),
+				InputValidationService.noHtmlValidator,
+			],
+		],
 	});
 
 	constructor() {
@@ -56,13 +71,15 @@ export class TaskModal {
 
 	onSubmit() {
 		if (this.taskForm.invalid) {
-			console.warn('Form is invalid. Cannot create task.');
+			this.taskForm.markAllAsTouched();
 			return;
 		}
 
+		const raw = this.taskForm.getRawValue();
+
 		this.saveTask.emit({
-			title: this.taskForm.getRawValue().title,
-			description: this.taskForm.getRawValue().description,
+			title: InputValidationService.sanitize(raw.title, 100),
+			description: InputValidationService.sanitize(raw.description, 1000),
 			column_id: this.columnId()!,
 		});
 
@@ -72,7 +89,15 @@ export class TaskModal {
 	onDelete() {
 		if (window.confirm('Are you sure you want to delete this task?')) {
 			this.deleteTaskRequested.emit();
-			this.onClose(); // Cerramos el modal tras emitir
+			this.onClose();
 		}
+	}
+
+	// Helper getters for template error display
+	get titleErrors() {
+		return this.taskForm.controls.title;
+	}
+	get descriptionErrors() {
+		return this.taskForm.controls.description;
 	}
 }

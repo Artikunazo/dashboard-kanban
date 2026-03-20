@@ -10,6 +10,25 @@
 <div
 	class="flex flex-col h-screen bg-gray-900 overflow-hidden"
 >
+	@if (rateLimitError()) {
+	<div class="flex items-center justify-between gap-3 bg-red-900/80 border-b border-red-700 px-6 py-3 shrink-0">
+		<div class="flex items-center gap-2 text-red-200 text-sm font-medium">
+			<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0 text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+			</svg>
+			{{ rateLimitError() }}
+		</div>
+		<button
+			(click)="dismissRateLimitError()"
+			class="text-red-300 hover:text-white transition-colors shrink-0"
+			aria-label="Cerrar alerta"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+			</svg>
+		</button>
+	</div>
+	}
 	<header
 		class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex items-center justify-between shrink-0 shadow-sm z-10"
 	>
@@ -37,16 +56,17 @@
 				</svg>
 			</h1>
 			} @else {
-			<input
-				#titleInput
-				type="text"
-				[value]="boardTitle()"
-				(blur)="saveBoardTitle(titleInput.value)"
-				(keyup.enter)="saveBoardTitle(titleInput.value)"
-				(keyup.escape)="isEditingTitle.set(false)"
-				class="text-2xl font-bold text-white bg-gray-900 border border-blue-500 rounded-md px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500 transition-all w-64"
-				autofocus
-			/>
+				<input
+					#titleInput
+					type="text"
+					[value]="boardTitle()"
+					(blur)="saveBoardTitle(titleInput.value)"
+					(keyup.enter)="saveBoardTitle(titleInput.value)"
+					(keyup.escape)="isEditingTitle.set(false)"
+					maxlength="100"
+					class="text-2xl font-bold text-white bg-gray-900 border border-blue-500 rounded-md px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500 transition-all w-64"
+					autofocus
+				/>
 			<span class="text-xs text-gray-500"
 				>Press Enter to save</span
 			>

@@ -3,6 +3,7 @@ import {CdkDragDrop, DragDropModule} from '@angular/cdk/drag-drop';
 import {BoardFacade} from './facades/board.facade';
 import {Task} from './models/board.models';
 import {TaskModal} from './components/task-modal/task-modal';
+import {InputValidationService} from '../../core/services/input-validation.service';
 
 @Component({
 	selector: 'app-board',
@@ -27,6 +28,8 @@ export class BoardComponent {
 	boardTitle = this.facade.boardTitle;
 	isEditingTitle = this.facade.isEditingTitle;
 	userBoards = this.facade.userBoards;
+	rateLimitError = this.facade.rateLimitError;
+	dismissRateLimitError = () => this.facade.dismissRateLimitError();
 
 	constructor() {
 		effect(
@@ -85,14 +88,22 @@ export class BoardComponent {
 	}
 
 	async onCreateNewBoard() {
-		const newTitle = prompt('Enter the name for the new board:', 'New Project');
-		if (!newTitle) return;
+		const rawTitle = prompt('Nombre del nuevo tablero:', 'New Project');
+		if (!rawTitle) return;
+
+		// Sanitize and validate before sending to facade
+		const newTitle = InputValidationService.sanitize(rawTitle, 100);
+		if (!newTitle) {
+			alert('El nombre del tablero no puede estar vacío.');
+			return;
+		}
 
 		const newBoardId = await this.facade.createBoardWithDefaults(newTitle);
 		if (newBoardId) {
 			this.boardChanged.emit(newBoardId);
-		} else {
-			alert('Failed to create the board. Please try again.');
+		} else if (!this.facade.rateLimitError()) {
+			// Only show generic error if not already showing a rate-limit message
+			alert('No se pudo crear el tablero. Por favor inténtalo de nuevo.');
 		}
 	}
 
