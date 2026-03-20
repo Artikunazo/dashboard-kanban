@@ -1,0 +1,28 @@
+<div class="flex-1">
+  <h3 class="font-medium text-white mb-2 group-hover:text-blue-400 transition-colors">
+    {{ task().title }}
+  </h3>
+  <p class="text-sm text-gray-400 line-clamp-2">
+    {{ task().description }}
+  </p>
+</div>
+
+<div class="mt-4 flex items-center justify-end min-h-[1.75rem]">
+  @if (task().assignee) {
+    @if (task().assignee!.avatar_url) {
+      <img
+        [src]="task().assignee!.avatar_url"
+        [alt]="task().assignee!.name"
+        [title]="task().assignee!.name"
+        class="w-7 h-7 rounded-full object-cover border-2 border-gray-800 shadow-sm"
+      />
+    } @else {
+      <div
+        class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-xs text-white font-bold border-2 border-gray-800 shadow-sm"
+        [title]="task().assignee!.name"
+      >
+        {{ task().assignee!.name.charAt(0).toUpperCase() }}
+      </div>
+    }
+  }
+</div>

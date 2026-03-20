@@ -3,246 +3,40 @@
 	class="flex h-screen items-center justify-center bg-gray-900"
 >
 	<p class="text-xl font-semibold text-white animate-pulse">
-		Cargando tablero...
+		Loading board...
 	</p>
 </div>
 } @else {
 <div
 	class="flex flex-col h-screen bg-gray-900 overflow-hidden"
 >
-	@if (rateLimitError()) {
-	<div class="flex items-center justify-between gap-3 bg-red-900/80 border-b border-red-700 px-6 py-3 shrink-0">
-		<div class="flex items-center gap-2 text-red-200 text-sm font-medium">
-			<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0 text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-				<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-			</svg>
-			{{ rateLimitError() }}
-		</div>
-		<button
-			(click)="dismissRateLimitError()"
-			class="text-red-300 hover:text-white transition-colors shrink-0"
-			aria-label="Cerrar alerta"
-		>
-			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-				<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-			</svg>
-		</button>
-	</div>
-	}
-	<header
-		class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex items-center justify-between shrink-0 shadow-sm z-10"
-	>
-		<div class="flex items-center gap-4">
-			@if (!isEditingTitle()) {
-			<h1
-				(click)="enableTitleEdit()"
-				class="text-2xl font-bold text-white tracking-tight cursor-pointer hover:text-blue-400 hover:bg-gray-700 px-2 py-1 rounded-md transition-all group flex items-center gap-2"
-				title="Click to edit title"
-			>
-				{{ boardTitle() }}
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke-width="2"
-					stroke="currentColor"
-					class="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-					/>
-				</svg>
-			</h1>
-			} @else {
-				<input
-					#titleInput
-					type="text"
-					[value]="boardTitle()"
-					(blur)="saveBoardTitle(titleInput.value)"
-					(keyup.enter)="saveBoardTitle(titleInput.value)"
-					(keyup.escape)="isEditingTitle.set(false)"
-					maxlength="100"
-					class="text-2xl font-bold text-white bg-gray-900 border border-blue-500 rounded-md px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500 transition-all w-64"
-					autofocus
-				/>
-			<span class="text-xs text-gray-500"
-				>Press Enter to save</span
-			>
-			}
-		</div>
-
-		<div class="flex items-center gap-3">
-			<div class="relative group">
-				<select
-					[value]="boardId()"
-					(change)="onBoardSelected($event)"
-					class="appearance-none bg-gray-900 border border-gray-700 text-gray-200 text-sm font-medium rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-48 p-2.5 pr-8 cursor-pointer outline-none transition-all"
-				>
-					@for (board of userBoards(); track board.id) {
-					<option
-						[value]="board.id"
-						[selected]="board.id === boardId()"
-					>
-						{{ board.title }}
-					</option>
-					}
-				</select>
-				<div
-					class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400 group-hover:text-white transition-colors"
-				>
-					<svg
-						class="w-4 h-4"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M19 9l-7 7-7-7"
-						></path>
-					</svg>
-				</div>
-			</div>
-
-			<div class="w-px h-6 bg-gray-700 mx-2"></div>
-
-			<button
-				(click)="onDeleteBoard()"
-				class="p-2 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
-				title="Delete Board"
-			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke-width="2"
-					stroke="currentColor"
-					class="w-5 h-5"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-					/>
-				</svg>
-			</button>
-
-			<div class="w-px h-6 bg-gray-700 mx-1"></div>
-
-			<button
-				(click)="onCreateNewBoard()"
-				class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
-			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke-width="2"
-					stroke="currentColor"
-					class="w-4 h-4"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						d="M12 4.5v15m7.5-7.5h-15"
-					/>
-				</svg>
-				New Board
-			</button>
-		</div>
-	</header>
+	<app-board-header
+		[boardTitle]="boardTitle()"
+		[isEditingTitle]="isEditingTitle()"
+		[userBoards]="userBoards()"
+		[activeBoardId]="boardId()"
+		[rateLimitError]="rateLimitError()"
+		(titleEditEnabled)="enableTitleEdit()"
+		(titleSaved)="saveBoardTitle($event)"
+		(titleEditCancelled)="onTitleEditCancelled()"
+		(boardSelected)="onBoardSelected($event)"
+		(deleteBoard)="onDeleteBoard()"
+		(createBoard)="onCreateNewBoard()"
+		(rateLimitDismissed)="dismissRateLimitError()"
+	/>
 
 	<div
 		cdkDropListGroup
 		class="flex h-screen w-full overflow-x-auto bg-gray-900 p-6 space-x-6"
 	>
 		@for (column of columns(); track column.id) {
-		<div
-			class="flex flex-col w-80 shrink-0 bg-gray-800 rounded-xl max-h-full"
-		>
-			<div class="p-4 border-b border-gray-700">
-				<h2 class="text-lg font-bold text-gray-100">
-					{{ column.title }}
-				</h2>
-			</div>
-
-			<div
-				cdkDropList
-				[cdkDropListData]="tasksByColumn()[column.id]"
-				(cdkDropListDropped)="drop($event, column.id)"
-				class="flex-1 overflow-y-auto p-4 space-y-3 min-h-[150px]"
-			>
-				@for (task of tasksByColumn()[column.id]; track
-				task.id) {
-
-				<div
-					cdkDrag
-					(click)="openViewModal(task)"
-					class="bg-gray-700 p-4 rounded-lg shadow-sm hover:ring-2 hover:ring-blue-500 cursor-grab active:cursor-grabbing transition-all flex flex-col min-h-[120px] group"
-				>
-					<div class="flex-1">
-						<h3
-							class="font-medium text-white mb-2 group-hover:text-blue-400 transition-colors"
-						>
-							{{ task.title }}
-						</h3>
-						<p class="text-sm text-gray-400 line-clamp-2">
-							{{ task.description }}
-						</p>
-					</div>
-
-					<div
-						class="mt-4 flex items-center justify-end min-h-[1.75rem]"
-					>
-						@if (task.assignee) { @if
-						(task.assignee.avatar_url) {
-						<img
-							[src]="task.assignee.avatar_url"
-							[alt]="task.assignee.name"
-							class="w-7 h-7 rounded-full object-cover border-2 border-gray-800 shadow-sm"
-							[title]="task.assignee.name"
-						/>
-						} @else {
-						<div
-							class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-xs text-white font-bold border-2 border-gray-800 shadow-sm"
-							[title]="task.assignee.name"
-						>
-							{{ task.assignee.name.charAt(0).toUpperCase()
-							}}
-						</div>
-						} }
-					</div>
-				</div>
-
-				}
-			</div>
-			<div class="p-4 pt-0">
-				<button
-					(click)="openCreateModal(column.id)"
-					class="w-full py-2 flex items-center justify-center gap-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors border border-dashed border-gray-600"
-				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke-width="2"
-						stroke="currentColor"
-						class="w-4 h-4"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							d="M12 4.5v15m7.5-7.5h-15"
-						/>
-					</svg>
-					Add Task
-				</button>
-			</div>
-		</div>
+		<app-column
+			[column]="column"
+			[tasks]="tasksByColumn()[column.id]"
+			(addTask)="openCreateModal(column.id)"
+			(taskClicked)="openViewModal($event)"
+			(taskDropped)="drop($event, column.id)"
+		/>
 		}
 	</div>
 </div>

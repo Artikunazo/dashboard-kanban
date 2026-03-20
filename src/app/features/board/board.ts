@@ -3,12 +3,14 @@ import {CdkDragDrop, DragDropModule} from '@angular/cdk/drag-drop';
 import {BoardFacade} from './facades/board.facade';
 import {Task} from './models/board.models';
 import {TaskModal} from './components/task-modal/task-modal';
+import {ColumnComponent} from './components/column/column';
+import {BoardHeaderComponent} from './components/board-header/board-header';
 import {InputValidationService} from '../../core/services/input-validation.service';
 
 @Component({
 	selector: 'app-board',
 	standalone: true,
-	imports: [DragDropModule, TaskModal],
+	imports: [DragDropModule, TaskModal, ColumnComponent, BoardHeaderComponent],
 	templateUrl: './board.html',
 })
 export class BoardComponent {
@@ -107,13 +109,14 @@ export class BoardComponent {
 		}
 	}
 
-	onBoardSelected(event: Event) {
-		const selectElement = event.target as HTMLSelectElement;
-		const selectedId = selectElement.value;
-
-		if (selectedId && selectedId !== this.boardId()) {
-			this.boardChanged.emit(selectedId);
+	onBoardSelected(boardId: string) {
+		if (boardId && boardId !== this.boardId()) {
+			this.boardChanged.emit(boardId);
 		}
+	}
+
+	onTitleEditCancelled() {
+		this.facade.isEditingTitle.set(false);
 	}
 
 	async onDeleteTask() {
