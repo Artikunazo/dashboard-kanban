@@ -23,17 +23,17 @@ body {
 }
 
 .cdk-drop-list-dragging .cdk-drag {
-    @apply transition-transform duration-100 ease-in-out;
+    @apply transition-transform duration-50 ease-in-out;
 }
 
 .cdk-drag-animating {
-    @apply transition-transform duration-100 ease-out;
+    @apply transition-transform duration-50 ease-out;
 }
 
 .cdk-drop-list-dragging .cdk-drag {
-  transition: transform 150ms cubic-bezier(0, 0, 0.2, 1);
+  transition: transform 50ms cubic-bezier(0, 0, 0.2, 1);
 }
 
 .cdk-drag-animating {
-  transition: transform 150ms cubic-bezier(0, 0, 0.2, 1);
+  transition: transform 50ms cubic-bezier(0, 0, 0.2, 1);
 }
