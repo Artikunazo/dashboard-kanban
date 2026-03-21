@@ -9,6 +9,7 @@ import { ModalMode } from '../components/task-modal/task-modal';
 import { LexoRank } from '@dalet-oss/lexorank';
 import { RateLimiterService } from '../../../core/services/rate-limiter.service';
 import { InputValidationService } from '../../../core/services/input-validation.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,7 @@ export class BoardFacade {
   private taskRepo = inject(TaskRepository);
   private teamMemberRepo = inject(SupabaseTeamMemberRepository);
   private rateLimiter = inject(RateLimiterService);
+  private toastService = inject(ToastService);
 
   // State Signals
   isLoading = signal<boolean>(true);
@@ -187,6 +189,7 @@ export class BoardFacade {
           }
           return updated;
         });
+        this.toastService.showSuccess('Task updated successfully');
       }
     } finally {
       this.isTaskSubmitting.set(false);
@@ -224,6 +227,7 @@ export class BoardFacade {
           updated[columnId] = [...(updated[columnId] || []), newTask];
           return updated;
         });
+        this.toastService.showSuccess('New task created');
       }
     } finally {
       this.isTaskSubmitting.set(false);
@@ -246,6 +250,7 @@ export class BoardFacade {
           updated[columnId] = updated[columnId].filter((t) => t.id !== taskId);
           return updated;
         });
+        this.toastService.showSuccess('Task deleted permanently');
         console.log('Task deleted successfully');
         this.closeModal();
       }
@@ -275,6 +280,7 @@ export class BoardFacade {
       this.boardTitle.set(sanitized);
       const updatedBoards = await this.boardRepo.getAllUserBoards();
       this.userBoards.set(updatedBoards);
+      this.toastService.showSuccess('Board title updated');
     }
     this.isEditingTitle.set(false);
   }
@@ -297,6 +303,8 @@ export class BoardFacade {
     const newBoardId = await this.boardRepo.createBoardWithDefaults(sanitizedTitle);
     if (!newBoardId) {
       this.isLoading.set(false);
+    } else {
+      this.toastService.showSuccess('New board created');
     }
     return newBoardId;
   }

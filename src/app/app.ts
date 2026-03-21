@@ -2,13 +2,14 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SupabaseService } from './core/services/supabase';
 import { BoardComponent } from './features/board/board';
+import { ToastComponent } from './shared/components/toast/toast';
 
 const BOARD_STORAGE_KEY = 'active_board_id';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, BoardComponent],
+  imports: [RouterOutlet, BoardComponent, ToastComponent],
   templateUrl: './app.html'
 })
 export class App implements OnInit {
