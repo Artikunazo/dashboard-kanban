@@ -1,6 +1,6 @@
 @if (members().length > 0) {
 <div>
-  <label class="block text-sm font-medium text-gray-300 mb-2">Assignee</label>
+<label class="block text-sm font-medium text-slate-300 mb-2">Assignee</label>
 
   <div class="flex items-center gap-2 flex-wrap">
     @for (member of members(); track member.id) {
@@ -8,26 +8,26 @@
       type="button"
       (click)="toggle(member.id)"
       [title]="member.name + (member.role ? ' · ' + member.role : '')"
-      class="relative flex-shrink-0 transition-transform hover:scale-110 focus:outline-none"
+      class="relative flex-shrink-0 transition-transform duration-200 hover:-translate-y-1 hover:scale-105 focus:outline-none"
     >
       @if (member.avatar_url) {
       <img
         [src]="member.avatar_url"
         [alt]="member.name"
-        class="w-9 h-9 rounded-full object-cover border-2 transition-all"
-        [class.border-blue-500]="selectedId() === member.id"
+        class="w-9 h-9 rounded-full object-cover border-2 transition-all shadow-sm"
+        [class.border-indigo-500]="selectedId() === member.id"
         [class.ring-2]="selectedId() === member.id"
-        [class.ring-blue-400]="selectedId() === member.id"
-        [class.border-gray-600]="selectedId() !== member.id"
+        [class.ring-indigo-400]="selectedId() === member.id"
+        [class.border-slate-600]="selectedId() !== member.id"
         [class.opacity-40]="selectedId() !== null && selectedId() !== member.id"
       />
       } @else {
       <div
-        class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold text-white border-2 transition-all"
-        [class.border-blue-500]="selectedId() === member.id"
+        class="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold text-white border-2 transition-all shadow-sm"
+        [class.border-indigo-300]="selectedId() === member.id"
         [class.ring-2]="selectedId() === member.id"
-        [class.ring-blue-400]="selectedId() === member.id"
-        [class.border-gray-600]="selectedId() !== member.id"
+        [class.ring-indigo-400]="selectedId() === member.id"
+        [class.border-slate-600]="selectedId() !== member.id"
         [class.opacity-40]="selectedId() !== null && selectedId() !== member.id"
       >
         {{ member.name.charAt(0).toUpperCase() }}
@@ -40,7 +40,7 @@
     <button
       type="button"
       (click)="unassign()"
-      class="text-xs text-gray-500 hover:text-gray-300 transition-colors ml-1"
+      class="text-xs text-slate-400 hover:text-slate-200 transition-colors ml-2 py-1 px-2 rounded hover:bg-slate-800"
     >
       Unassign
     </button>
@@ -48,10 +48,10 @@
   </div>
 
   @if (selectedMember) {
-  <p class="text-xs text-blue-400 mt-1.5">
-    Assigned to <span class="font-medium">{{ selectedMember.name }}</span>
+  <p class="text-xs text-indigo-400 mt-2 bg-indigo-500/10 inline-block px-2 py-1 rounded-md border border-indigo-500/20">
+    Assigned to <span class="font-medium text-indigo-300">{{ selectedMember.name }}</span>
     @if (selectedMember.role) {
-    <span class="text-gray-500"> · {{ selectedMember.role }}</span>
+    <span class="text-indigo-400/70"> · {{ selectedMember.role }}</span>
     }
   </p>
   }

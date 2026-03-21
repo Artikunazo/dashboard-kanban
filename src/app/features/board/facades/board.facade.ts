@@ -29,6 +29,9 @@ export class BoardFacade {
   selectedTask = signal<Task | null>(null);
   activeColumnId = signal<string | null>(null);
 
+  isTaskSubmitting = signal<boolean>(false);
+  isTaskDeleting = signal<boolean>(false);
+
   boardTitle = signal<string>('Cargando tablero...');
   isEditingTitle = signal<boolean>(false);
   userBoards = signal<{id: string; title: string}[]>([]);
@@ -146,35 +149,53 @@ export class BoardFacade {
     this.rateLimitError.set(null);
   }
 
-  async saveTask(taskData: Partial<Task>) {
-    if (this.modalMode() === 'edit' && this.selectedTask()) {
-      const taskId = this.selectedTask()!.id;
-      const columnId = this.selectedTask()!.column_id;
+  async patchTask(taskId: string, columnId: string, updates: Partial<Task>) {
+    this.isTaskSubmitting.set(true);
+    try {
+      const sanitizedUpdates = { ...updates };
+      if (typeof sanitizedUpdates.title === 'string') {
+        sanitizedUpdates.title = InputValidationService.sanitize(sanitizedUpdates.title, 100);
+      }
+      if (typeof sanitizedUpdates.description === 'string') {
+        sanitizedUpdates.description = InputValidationService.sanitize(sanitizedUpdates.description, 1000);
+      }
 
-      const success = await this.taskRepo.updateTask(taskId, {
-        title: taskData.title,
-        description: taskData.description,
-        assignee_id: taskData.assignee_id ?? null,
-      });
+      const success = await this.taskRepo.updateTask(taskId, sanitizedUpdates);
 
       if (success) {
         this.tasksByColumn.update((prev) => {
-          const updated = {...prev};
+          const updated = { ...prev };
+          if (!updated[columnId]) return updated;
+          
           const taskIndex = updated[columnId].findIndex((t) => t.id === taskId);
           if (taskIndex > -1) {
-            const member = this.teamMembers().find(m => m.id === taskData.assignee_id) ?? undefined;
+            const currentTask = updated[columnId][taskIndex];
+            const member = updates.assignee_id !== undefined 
+              ? (this.teamMembers().find(m => m.id === updates.assignee_id) ?? undefined)
+              : currentTask.assignee;
+              
             updated[columnId][taskIndex] = {
-              ...updated[columnId][taskIndex],
-              title: taskData.title!,
-              description: taskData.description,
-              assignee_id: taskData.assignee_id ?? null,
-              assignee: member,
+              ...currentTask,
+              ...sanitizedUpdates,
+              assignee: member
             };
+            
+            // Optimistically update the selected task if it's the one we're viewing
+            if (this.selectedTask()?.id === taskId) {
+              this.selectedTask.set(updated[columnId][taskIndex]);
+            }
           }
           return updated;
         });
       }
-    } else {
+    } finally {
+      this.isTaskSubmitting.set(false);
+    }
+  }
+
+  async saveTask(taskData: Partial<Task>) {
+    this.isTaskSubmitting.set(true);
+    try {
       // --- Rate limit check ---
       if (!this.rateLimiter.canPerform('create-task')) {
         this.rateLimitError.set(this.rateLimiter.getErrorMessage('create-task'));
@@ -204,25 +225,32 @@ export class BoardFacade {
           return updated;
         });
       }
+    } finally {
+      this.isTaskSubmitting.set(false);
     }
   }
 
   async deleteTask() {
     if (!this.selectedTask()) return;
 
-    const taskId = this.selectedTask()!.id;
-    const columnId = this.selectedTask()!.column_id;
+    this.isTaskDeleting.set(true);
+    try {
+      const taskId = this.selectedTask()!.id;
+      const columnId = this.selectedTask()!.column_id;
 
-    const success = await this.taskRepo.deleteTask(taskId);
+      const success = await this.taskRepo.deleteTask(taskId);
 
-    if (success) {
-      this.tasksByColumn.update((prev) => {
-        const updated = {...prev};
-        updated[columnId] = updated[columnId].filter((t) => t.id !== taskId);
-        return updated;
-      });
-      console.log('Task deleted successfully');
-      this.closeModal();
+      if (success) {
+        this.tasksByColumn.update((prev) => {
+          const updated = {...prev};
+          updated[columnId] = updated[columnId].filter((t) => t.id !== taskId);
+          return updated;
+        });
+        console.log('Task deleted successfully');
+        this.closeModal();
+      }
+    } finally {
+      this.isTaskDeleting.set(false);
     }
   }
 

@@ -1,8 +1,8 @@
 <div class="flex-1">
-  <h3 class="font-medium text-white mb-2 group-hover:text-blue-400 transition-colors">
+  <h3 class="font-semibold text-slate-100 mb-2 group-hover:text-indigo-400 transition-colors tracking-tight">
     {{ task().title }}
   </h3>
-  <p class="text-sm text-gray-400 line-clamp-2">
+  <p class="text-sm text-slate-400 line-clamp-2 leading-relaxed">
     {{ task().description }}
   </p>
 </div>
@@ -14,11 +14,11 @@
         [src]="task().assignee!.avatar_url"
         [alt]="task().assignee!.name"
         [title]="task().assignee!.name"
-        class="w-7 h-7 rounded-full object-cover border-2 border-gray-800 shadow-sm"
+        class="w-7 h-7 rounded-full object-cover border-2 border-slate-800 shadow-sm"
       />
     } @else {
       <div
-        class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-xs text-white font-bold border-2 border-gray-800 shadow-sm"
+        class="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs text-white font-bold border-2 border-slate-800 shadow-sm ring-1 ring-white/10"
         [title]="task().assignee!.name"
       >
         {{ task().assignee!.name.charAt(0).toUpperCase() }}

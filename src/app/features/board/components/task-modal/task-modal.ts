@@ -1,22 +1,23 @@
-import {Component, effect, inject, input, output, signal} from '@angular/core';
+import {Component, effect, inject, input, output, signal, computed} from '@angular/core';
 import {
 	NonNullableFormBuilder,
 	ReactiveFormsModule,
 	Validators,
 } from '@angular/forms';
-import {Task, TeamMember} from '../../models/board.models';
+import {Column, Task, TeamMember} from '../../models/board.models';
 import {InputValidationService} from '../../../../core/services/input-validation.service';
 import {IconClose} from '../../../../shared/components/icons/icon-close';
 import {IconTrash} from '../../../../shared/components/icons/icon-trash';
-import {IconEdit} from '../../../../shared/components/icons/icon-edit';
+import {IconSpinner} from '../../../../shared/components/icons/icon-spinner';
+import {IconDots} from '../../../../shared/components/icons/icon-dots';
 import {AssigneePickerComponent} from '../../../../shared/components/assignee-picker/assignee-picker';
 
-export type ModalMode = 'create' | 'view' | 'edit';
+export type ModalMode = 'create' | 'view';
 
 @Component({
 	selector: 'app-task-modal',
 	standalone: true,
-	imports: [ReactiveFormsModule, IconClose, IconTrash, IconEdit, AssigneePickerComponent],
+	imports: [ReactiveFormsModule, IconClose, IconTrash, IconSpinner, IconDots, AssigneePickerComponent],
 	templateUrl: './task-modal.html',
 })
 export class TaskModal {
@@ -25,14 +26,30 @@ export class TaskModal {
 	task = input<Task | null>(null);
 	columnId = input<string | null>(null);
 	teamMembers = input<TeamMember[]>([]);
+	columns = input<Column[]>([]);
+	isSubmitting = input<boolean>(false);
+	isDeleting = input<boolean>(false);
 
 	selectedAssigneeId = signal<string | null>(null);
+	isMenuOpen = signal<boolean>(false);
+	
+	isEditingTitle = signal<boolean>(false);
+	isEditingDescription = signal<boolean>(false);
+
+	columnTitle = computed(() => {
+		const colId = this.task()?.column_id || this.columnId();
+		if (!colId) return 'Unknown';
+		const col = this.columns().find(c => c.id === colId);
+		return col ? col.title : colId;
+	});
 
 	closeModal = output<void>();
 	saveTask = output<Partial<Task>>();
-	requestEdit = output<void>();
 	deleteTaskRequested = output<void>();
+	patchTask = output<{taskId: string, columnId: string, updates: Partial<Task>}>();
 
+	titleErrors = {invalid: false, touched: false, errors: null as null | any};
+	descriptionErrors = {invalid: false, touched: false, errors: null as null | any};
 	// Formulario Reactivo con validadores de seguridad
 	private fb = inject(NonNullableFormBuilder);
 	taskForm = this.fb.group({
@@ -60,7 +77,7 @@ export class TaskModal {
 				this.taskForm.reset();
 				this.selectedAssigneeId.set(null);
 			} else if (
-				(this.mode() === 'view' || this.mode() === 'edit') &&
+				this.mode() === 'view' &&
 				this.task()
 			) {
 				this.taskForm.patchValue({
@@ -69,10 +86,17 @@ export class TaskModal {
 				});
 				this.selectedAssigneeId.set(this.task()!.assignee_id ?? null);
 			}
+			
+			// Reset inline edit states when modal opens/changes
+			this.isEditingTitle.set(false);
+			this.isEditingDescription.set(false);
+			// Close menu when modal state changes
+			this.isMenuOpen.set(false);
 		});
 	}
 
 	onClose() {
+		this.isMenuOpen.set(false);
 		this.closeModal.emit();
 	}
 
@@ -95,16 +119,63 @@ export class TaskModal {
 	}
 
 	onDelete() {
+		this.isMenuOpen.set(false);
 		if (window.confirm('Are you sure you want to delete this task?')) {
 			this.deleteTaskRequested.emit();
 			this.onClose();
 		}
 	}
 
-	get titleErrors() {
-		return this.taskForm.controls.title;
+	updateAssignee(assigneeId: string | null) {
+		this.selectedAssigneeId.set(assigneeId);
+		if (this.mode() === 'view' && this.task()) {
+			this.patchTask.emit({
+				taskId: this.task()!.id,
+				columnId: this.task()!.column_id,
+				updates: { assignee_id: assigneeId }
+			});
+		}
 	}
-	get descriptionErrors() {
-		return this.taskForm.controls.description;
+
+	enableTitleEdit() {
+		this.isEditingDescription.set(false);
+		this.isEditingTitle.set(true);
+	}
+
+	enableDescriptionEdit() {
+		this.isEditingTitle.set(false);
+		this.isEditingDescription.set(true);
+	}
+
+	cancelTitleEdit() {
+		this.isEditingTitle.set(false);
+	}
+
+	cancelDescriptionEdit() {
+		this.isEditingDescription.set(false);
+	}
+
+	saveInlineTitle(newTitle: string) {
+		const title = newTitle.trim();
+		this.isEditingTitle.set(false);
+		if (!this.task() || !title || title === this.task()!.title) return;
+		
+		this.patchTask.emit({
+			taskId: this.task()!.id,
+			columnId: this.task()!.column_id,
+			updates: { title }
+		});
+	}
+
+	saveInlineDescription(newDesc: string) {
+		const description = newDesc.trim();
+		this.isEditingDescription.set(false);
+		if (!this.task() || description === (this.task()!.description || '')) return;
+		
+		this.patchTask.emit({
+			taskId: this.task()!.id,
+			columnId: this.task()!.column_id,
+			updates: { description }
+		});
 	}
 }

@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+@theme {
+  /* Provide a slight custom touch for an elevated dark theme */
+  --color-slate-950: #0a0f1c;
+  --color-slate-900: #111827;
+  --color-indigo-600: #6366f1;
+  --color-indigo-500: #818cf8;
+}
+
+body {
+  @apply bg-slate-950 text-slate-100;
+}
+
 .cdk-drag-placeholder {
     @apply opacity-0;
 }

@@ -28,6 +28,8 @@ export class BoardComponent {
 	readonly selectedTask = () => this.facade.selectedTask();
 	readonly activeColumnId = () => this.facade.activeColumnId();
 	readonly teamMembers = () => this.facade.teamMembers();
+	isTaskSubmitting = this.facade.isTaskSubmitting;
+	isTaskDeleting = this.facade.isTaskDeleting;
 	boardTitle = this.facade.boardTitle;
 	isEditingTitle = this.facade.isEditingTitle;
 	userBoards = this.facade.userBoards;
