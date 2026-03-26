@@ -26,7 +26,7 @@ CREATE TABLE columns (
     board_id UUID NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
     title VARCHAR(50) NOT NULL,
     color VARCHAR(20), 
-    position NUMERIC NOT NULL, 
+    position TEXT NOT NULL, 
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -105,9 +105,9 @@ BEGIN
 
   INSERT INTO boards (visitor_id, title, description) VALUES (new_visitor_id, '🚀 Demo Project', 'Auto-generated board to explore all features.') RETURNING id INTO new_board_id;
 
-  INSERT INTO columns (board_id, title, color, position) VALUES (new_board_id, 'To Do', '#ef4444', 1) RETURNING id INTO col_todo;
-  INSERT INTO columns (board_id, title, color, position) VALUES (new_board_id, 'In Progress', '#f59e0b', 2) RETURNING id INTO col_inprogress;
-  INSERT INTO columns (board_id, title, color, position) VALUES (new_board_id, 'Done', '#10b981', 3) RETURNING id INTO col_done;
+  INSERT INTO columns (board_id, title, color, position) VALUES (new_board_id, 'To Do', '#ef4444', '0|hzzzzz:') RETURNING id INTO col_todo;
+  INSERT INTO columns (board_id, title, color, position) VALUES (new_board_id, 'In Progress', '#f59e0b', '0|hzzzzz:i') RETURNING id INTO col_inprogress;
+  INSERT INTO columns (board_id, title, color, position) VALUES (new_board_id, 'Done', '#10b981', '0|hzzzzz:s') RETURNING id INTO col_done;
 
   INSERT INTO tasks (column_id, assignee_id, title, description, position) VALUES (col_todo, mike_id, 'Integrate Supabase', 'Connect the database and test realtime subscriptions.', 'a') RETURNING id INTO task_1;
   INSERT INTO tasks (column_id, assignee_id, title, description, position) VALUES (col_todo, NULL, 'Design with Tailwind CSS', 'Migrate styles and make columns fully responsive.', 'b');

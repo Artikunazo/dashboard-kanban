@@ -1,35 +1,40 @@
-<div class="flex flex-col w-80 shrink-0 bg-slate-900/80 rounded-2xl max-h-full border border-slate-800/60 shadow-lg backdrop-blur-md">
+<div
+	class="flex flex-col w-80 shrink-0 bg-slate-900/80 rounded-2xl max-h-full border border-slate-800/60 shadow-lg backdrop-blur-md"
+>
+	<!-- Header -->
+	<div class="p-4 border-b border-slate-800/60">
+		<h2
+			class="text-lg font-bold text-slate-100 tracking-tight"
+		>
+			{{ column().title }}
+		</h2>
+	</div>
 
-  <!-- Header -->
-  <div class="p-4 border-b border-slate-800/60">
-    <h2 class="text-lg font-bold text-slate-100 tracking-tight">{{ column().title }}</h2>
-  </div>
+	<!-- Task drop zone -->
+	<div
+		cdkDropList
+		[cdkDropListData]="tasks()"
+		(cdkDropListDropped)="taskDropped.emit($event)"
+		id="{{ column().title }}"
+		class="flex-1 overflow-y-auto p-4 space-y-3 min-h-[150px]"
+	>
+		@for (task of tasks(); track task.id) {
+		<app-task-card
+			cdkDrag
+			[task]="task"
+			(taskClicked)="taskClicked.emit(task)"
+		/>
+		}
+	</div>
 
-  <!-- Task drop zone -->
-  <div
-    cdkDropList
-    [cdkDropListData]="tasks()"
-    (cdkDropListDropped)="taskDropped.emit($event)"
-    class="flex-1 overflow-y-auto p-4 space-y-3 min-h-[150px]"
-  >
-    @for (task of tasks(); track task.id) {
-      <app-task-card
-        cdkDrag
-        [task]="task"
-        (taskClicked)="taskClicked.emit(task)"
-      />
-    }
-  </div>
-
-  <!-- Add task button -->
-  <div class="p-4 pt-0">
-    <button
-      (click)="addTask.emit()"
-      class="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-xl transition-colors border border-dashed border-slate-600 hover:border-slate-500"
-    >
-      <app-icon-plus />
-      Add Task
-    </button>
-  </div>
-
+	<!-- Add task button -->
+	<div class="p-4 pt-0">
+		<button
+			(click)="addTask.emit()"
+			class="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-xl transition-colors border border-dashed border-slate-600 hover:border-slate-500"
+		>
+			<app-icon-plus />
+			Add Task
+		</button>
+	</div>
 </div>

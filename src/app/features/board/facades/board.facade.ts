@@ -1,311 +1,336 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { BoardRepository } from '../domain/repositories/board.repository';
-import { TaskRepository } from '../domain/repositories/task.repository';
-import { TeamMemberRepository } from '../domain/repositories/team-member.repository';
-import { SupabaseTeamMemberRepository } from '../infrastructure/repositories/supabase-team-member.repository';
-import { Column, Task, TeamMember } from '../models/board.models';
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { ModalMode } from '../components/task-modal/task-modal';
-import { LexoRank } from '@dalet-oss/lexorank';
-import { RateLimiterService } from '../../../core/services/rate-limiter.service';
-import { InputValidationService } from '../../../core/services/input-validation.service';
-import { ToastService } from '../../../core/services/toast.service';
+import {Injectable, inject, signal} from '@angular/core';
+import {BoardRepository} from '../domain/repositories/board.repository';
+import {TaskRepository} from '../domain/repositories/task.repository';
+import {TeamMemberRepository} from '../domain/repositories/team-member.repository';
+import {SupabaseTeamMemberRepository} from '../infrastructure/repositories/supabase-team-member.repository';
+import {Column, Task, TeamMember} from '../models/board.models';
+import {
+	CdkDragDrop,
+	moveItemInArray,
+	transferArrayItem,
+} from '@angular/cdk/drag-drop';
+import {ModalMode} from '../components/task-modal/task-modal';
+import {LexoRank} from '@dalet-oss/lexorank';
+import {RateLimiterService} from '../../../core/services/rate-limiter.service';
+import {InputValidationService} from '../../../core/services/input-validation.service';
+import {ToastService} from '../../../core/services/toast.service';
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root',
 })
 export class BoardFacade {
-  private boardRepo = inject(BoardRepository);
-  private taskRepo = inject(TaskRepository);
-  private teamMemberRepo = inject(SupabaseTeamMemberRepository);
-  private rateLimiter = inject(RateLimiterService);
-  private toastService = inject(ToastService);
+	private boardRepo = inject(BoardRepository);
+	private taskRepo = inject(TaskRepository);
+	private teamMemberRepo = inject(SupabaseTeamMemberRepository);
+	private rateLimiter = inject(RateLimiterService);
+	private toastService = inject(ToastService);
 
-  // State Signals
-  isLoading = signal<boolean>(true);
-  columns = signal<Column[]>([]);
-  tasksByColumn = signal<Record<string, Task[]>>({});
+	// State Signals
+	isLoading = signal<boolean>(true);
+	columns = signal<Column[]>([]);
+	tasksByColumn = signal<Record<string, Task[]>>({});
 
-  isModalOpen = signal<boolean>(false);
-  modalMode = signal<ModalMode>('create');
-  selectedTask = signal<Task | null>(null);
-  activeColumnId = signal<string | null>(null);
+	isModalOpen = signal<boolean>(false);
+	modalMode = signal<ModalMode>('create');
+	selectedTask = signal<Task | null>(null);
+	activeColumnId = signal<string | null>(null);
 
-  isTaskSubmitting = signal<boolean>(false);
-  isTaskDeleting = signal<boolean>(false);
+	isTaskSubmitting = signal<boolean>(false);
+	isTaskDeleting = signal<boolean>(false);
 
-  boardTitle = signal<string>('Cargando tablero...');
-  isEditingTitle = signal<boolean>(false);
-  userBoards = signal<{id: string; title: string}[]>([]);
-  teamMembers = signal<TeamMember[]>([]);
+	boardTitle = signal<string>('Cargando tablero...');
+	isEditingTitle = signal<boolean>(false);
+	userBoards = signal<{id: string; title: string}[]>([]);
+	teamMembers = signal<TeamMember[]>([]);
 
-  /** Non-null when an action has been rate-limited; shown as banner in the template. */
-  rateLimitError = signal<string | null>(null);
+	/** Non-null when an action has been rate-limited; shown as banner in the template. */
+	rateLimitError = signal<string | null>(null);
 
-  // Current Board ID tracking
-  private currentBoardId: string | null = null;
+	// Current Board ID tracking
+	private currentBoardId: string | null = null;
 
-  async loadBoardData(boardId: string) {
-    this.currentBoardId = boardId;
-    this.isLoading.set(true);
+	async loadBoardData(boardId: string) {
+		this.currentBoardId = boardId;
+		this.isLoading.set(true);
 
-    const [boardsList, boardDetails, data, members] = await Promise.all([
-      this.boardRepo.getAllUserBoards(),
-      this.boardRepo.getBoardDetails(boardId),
-      this.boardRepo.getFullBoard(boardId),
-      this.teamMemberRepo.getAll(),
-    ]);
+		const [boardsList, boardDetails, data, members] = await Promise.all([
+			this.boardRepo.getAllUserBoards(),
+			this.boardRepo.getBoardDetails(boardId),
+			this.boardRepo.getFullBoard(boardId),
+			this.teamMemberRepo.getAll(),
+		]);
 
-    this.userBoards.set(boardsList);
-    this.teamMembers.set(members);
+		this.userBoards.set(boardsList);
+		this.teamMembers.set(members);
 
-    if (boardDetails) {
-      this.boardTitle.set(boardDetails.title);
-    }
+		if (boardDetails) {
+			this.boardTitle.set(boardDetails.title);
+		}
 
-    if (data) {
-      this.columns.set(data.columns);
+		if (data) {
+			this.columns.set(data.columns);
 
-      const grouped: Record<string, Task[]> = {};
-      data.columns.forEach((col) => (grouped[col.id] = []));
-      data.tasks.forEach((task) => {
-        if (grouped[task.column_id]) {
-          grouped[task.column_id].push(task);
-        }
-      });
-      this.tasksByColumn.set(grouped);
-    }
-    this.isLoading.set(false);
-  }
+			const grouped: Record<string, Task[]> = {};
+			data.columns.forEach((col) => (grouped[col.id] = []));
+			data.tasks.forEach((task) => {
+				if (grouped[task.column_id]) {
+					grouped[task.column_id].push(task);
+				}
+			});
+			this.tasksByColumn.set(grouped);
+		}
+		this.isLoading.set(false);
+	}
 
-  handleTaskDrop(event: CdkDragDrop<Task[]>, targetColumnId: string) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex,
-      );
-    } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex,
-      );
-    }
+	handleTaskDrop(event: CdkDragDrop<Task[]>, targetColumnId: string) {
+		if (event.previousContainer === event.container) {
+			moveItemInArray(
+				event.container.data,
+				event.previousIndex,
+				event.currentIndex,
+			);
+		} else {
+			transferArrayItem(
+				event.previousContainer.data,
+				event.container.data,
+				event.previousIndex,
+				event.currentIndex,
+			);
+		}
 
-    const data = event.container.data;
-    const currentIndex = event.currentIndex;
-    const draggedTask = data[currentIndex];
+		// Refresh signal to notify Angular of the changed array contents
+		this.tasksByColumn.set({...this.tasksByColumn()});
 
-    const getRank = (idx: number) => {
-      try {
-        return LexoRank.parse(data[idx].position);
-      } catch (e) {
-        return LexoRank.middle();
-      }
-    };
+		const data = event.container.data;
+		const currentIndex = event.currentIndex;
+		const draggedTask = data[currentIndex];
 
-    let newRank: LexoRank;
+		const getRank = (idx: number) => {
+			try {
+				return LexoRank.parse(data[idx].position);
+			} catch (e) {
+				return LexoRank.middle();
+			}
+		};
 
-    if (data.length === 1) {
-      newRank = LexoRank.middle();
-    } else if (currentIndex === 0) {
-      newRank = getRank(1).genPrev();
-    } else if (currentIndex === data.length - 1) {
-      newRank = getRank(currentIndex - 1).genNext();
-    } else {
-      newRank = getRank(currentIndex - 1).between(getRank(currentIndex + 1));
-    }
+		let newRank: LexoRank;
 
-    const newPositionStr = newRank.toString();
+		if (data.length === 1) {
+			newRank = LexoRank.middle();
+		} else if (currentIndex === 0) {
+			newRank = getRank(1).genPrev();
+		} else if (currentIndex === data.length - 1) {
+			newRank = getRank(currentIndex - 1).genNext();
+		} else {
+			newRank = getRank(currentIndex - 1).between(getRank(currentIndex + 1));
+		}
 
-    if (draggedTask.position !== newPositionStr || draggedTask.column_id !== targetColumnId) {
-      draggedTask.position = newPositionStr;
-      draggedTask.column_id = targetColumnId;
-      console.log(`Moviendo tarea a LexoRank: ${newPositionStr}`);
-      this.taskRepo.updateTasksBulk([draggedTask]);
-    }
-  }
+		const newPositionStr = newRank.toString();
 
-  openCreateModal(columnId: string) {
-    this.activeColumnId.set(columnId);
-    this.modalMode.set('create');
-    this.selectedTask.set(null);
-    this.isModalOpen.set(true);
-  }
+		if (
+			draggedTask.position !== newPositionStr ||
+			draggedTask.column_id !== targetColumnId
+		) {
+			draggedTask.position = newPositionStr;
+			draggedTask.column_id = targetColumnId;
+			console.log(`Moviendo tarea a LexoRank: ${newPositionStr}`);
+			this.taskRepo.updateTasksBulk([draggedTask]);
+		}
+	}
 
-  openViewModal(task: Task) {
-    this.selectedTask.set(task);
-    this.modalMode.set('view');
-    this.isModalOpen.set(true);
-  }
+	openCreateModal(columnId: string) {
+		this.activeColumnId.set(columnId);
+		this.modalMode.set('create');
+		this.selectedTask.set(null);
+		this.isModalOpen.set(true);
+	}
 
-  closeModal() {
-    this.isModalOpen.set(false);
-    this.activeColumnId.set(null);
-    this.selectedTask.set(null);
-  }
+	openViewModal(task: Task) {
+		this.selectedTask.set(task);
+		this.modalMode.set('view');
+		this.isModalOpen.set(true);
+	}
 
-  dismissRateLimitError() {
-    this.rateLimitError.set(null);
-  }
+	closeModal() {
+		this.isModalOpen.set(false);
+		this.activeColumnId.set(null);
+		this.selectedTask.set(null);
+	}
 
-  async patchTask(taskId: string, columnId: string, updates: Partial<Task>) {
-    this.isTaskSubmitting.set(true);
-    try {
-      const sanitizedUpdates = { ...updates };
-      if (typeof sanitizedUpdates.title === 'string') {
-        sanitizedUpdates.title = InputValidationService.sanitize(sanitizedUpdates.title, 100);
-      }
-      if (typeof sanitizedUpdates.description === 'string') {
-        sanitizedUpdates.description = InputValidationService.sanitize(sanitizedUpdates.description, 1000);
-      }
+	dismissRateLimitError() {
+		this.rateLimitError.set(null);
+	}
 
-      const success = await this.taskRepo.updateTask(taskId, sanitizedUpdates);
+	async patchTask(taskId: string, columnId: string, updates: Partial<Task>) {
+		this.isTaskSubmitting.set(true);
+		try {
+			const sanitizedUpdates = {...updates};
+			if (typeof sanitizedUpdates.title === 'string') {
+				sanitizedUpdates.title = InputValidationService.sanitize(
+					sanitizedUpdates.title,
+					100,
+				);
+			}
+			if (typeof sanitizedUpdates.description === 'string') {
+				sanitizedUpdates.description = InputValidationService.sanitize(
+					sanitizedUpdates.description,
+					1000,
+				);
+			}
 
-      if (success) {
-        this.tasksByColumn.update((prev) => {
-          const updated = { ...prev };
-          if (!updated[columnId]) return updated;
-          
-          const taskIndex = updated[columnId].findIndex((t) => t.id === taskId);
-          if (taskIndex > -1) {
-            const currentTask = updated[columnId][taskIndex];
-            const member = updates.assignee_id !== undefined 
-              ? (this.teamMembers().find(m => m.id === updates.assignee_id) ?? undefined)
-              : currentTask.assignee;
-              
-            updated[columnId][taskIndex] = {
-              ...currentTask,
-              ...sanitizedUpdates,
-              assignee: member
-            };
-            
-            // Optimistically update the selected task if it's the one we're viewing
-            if (this.selectedTask()?.id === taskId) {
-              this.selectedTask.set(updated[columnId][taskIndex]);
-            }
-          }
-          return updated;
-        });
-        this.toastService.showSuccess('Task updated successfully');
-      }
-    } finally {
-      this.isTaskSubmitting.set(false);
-    }
-  }
+			const success = await this.taskRepo.updateTask(taskId, sanitizedUpdates);
 
-  async saveTask(taskData: Partial<Task>) {
-    this.isTaskSubmitting.set(true);
-    try {
-      // --- Rate limit check ---
-      if (!this.rateLimiter.canPerform('create-task')) {
-        this.rateLimitError.set(this.rateLimiter.getErrorMessage('create-task'));
-        return;
-      }
+			if (success) {
+				this.tasksByColumn.update((prev) => {
+					const updated = {...prev};
+					if (!updated[columnId]) return updated;
 
-      const columnId = taskData.column_id!;
-      const currentTasks = this.tasksByColumn()[columnId] || [];
+					const taskIndex = updated[columnId].findIndex((t) => t.id === taskId);
+					if (taskIndex > -1) {
+						const currentTask = updated[columnId][taskIndex];
+						const member =
+							updates.assignee_id !== undefined
+								? (this.teamMembers().find(
+										(m) => m.id === updates.assignee_id,
+									) ?? undefined)
+								: currentTask.assignee;
 
-      if (currentTasks.length === 0) {
-        taskData.position = LexoRank.middle().toString();
-      } else {
-        try {
-          const lastTask = currentTasks[currentTasks.length - 1];
-          taskData.position = LexoRank.parse(lastTask.position).genNext().toString();
-        } catch (e) {
-          taskData.position = LexoRank.middle().toString();
-        }
-      }
+						updated[columnId][taskIndex] = {
+							...currentTask,
+							...sanitizedUpdates,
+							assignee: member,
+						};
 
-      const newTask = await this.taskRepo.createTask(taskData);
+						// Optimistically update the selected task if it's the one we're viewing
+						if (this.selectedTask()?.id === taskId) {
+							this.selectedTask.set(updated[columnId][taskIndex]);
+						}
+					}
+					return updated;
+				});
+				this.toastService.showSuccess('Task updated successfully');
+			}
+		} finally {
+			this.isTaskSubmitting.set(false);
+		}
+	}
 
-      if (newTask) {
-        this.tasksByColumn.update((prev) => {
-          const updated = {...prev};
-          updated[columnId] = [...(updated[columnId] || []), newTask];
-          return updated;
-        });
-        this.toastService.showSuccess('New task created');
-      }
-    } finally {
-      this.isTaskSubmitting.set(false);
-    }
-  }
+	async saveTask(taskData: Partial<Task>) {
+		this.isTaskSubmitting.set(true);
+		try {
+			// --- Rate limit check ---
+			if (!this.rateLimiter.canPerform('create-task')) {
+				this.rateLimitError.set(
+					this.rateLimiter.getErrorMessage('create-task'),
+				);
+				return;
+			}
 
-  async deleteTask() {
-    if (!this.selectedTask()) return;
+			const columnId = taskData.column_id!;
+			const currentTasks = this.tasksByColumn()[columnId] || [];
 
-    this.isTaskDeleting.set(true);
-    try {
-      const taskId = this.selectedTask()!.id;
-      const columnId = this.selectedTask()!.column_id;
+			if (currentTasks.length === 0) {
+				taskData.position = LexoRank.middle().toString();
+			} else {
+				try {
+					const lastTask = currentTasks[currentTasks.length - 1];
+					taskData.position = LexoRank.parse(lastTask.position)
+						.genNext()
+						.toString();
+				} catch (e) {
+					taskData.position = LexoRank.middle().toString();
+				}
+			}
 
-      const success = await this.taskRepo.deleteTask(taskId);
+			const newTask = await this.taskRepo.createTask(taskData);
 
-      if (success) {
-        this.tasksByColumn.update((prev) => {
-          const updated = {...prev};
-          updated[columnId] = updated[columnId].filter((t) => t.id !== taskId);
-          return updated;
-        });
-        this.toastService.showSuccess('Task deleted permanently');
-        console.log('Task deleted successfully');
-        this.closeModal();
-      }
-    } finally {
-      this.isTaskDeleting.set(false);
-    }
-  }
+			if (newTask) {
+				this.tasksByColumn.update((prev) => {
+					const updated = {...prev};
+					updated[columnId] = [...(updated[columnId] || []), newTask];
+					return updated;
+				});
+				this.toastService.showSuccess('New task created');
+			}
+		} finally {
+			this.isTaskSubmitting.set(false);
+		}
+	}
 
-  enableTitleEdit() {
-    this.isEditingTitle.set(true);
-  }
+	async deleteTask() {
+		if (!this.selectedTask()) return;
 
-  async saveBoardTitle(newTitle: string) {
-    const sanitized = InputValidationService.sanitize(newTitle, 100);
+		this.isTaskDeleting.set(true);
+		try {
+			const taskId = this.selectedTask()!.id;
+			const columnId = this.selectedTask()!.column_id;
 
-    if (!this.currentBoardId || !sanitized || sanitized === this.boardTitle()) {
-      this.isEditingTitle.set(false);
-      return;
-    }
+			const success = await this.taskRepo.deleteTask(taskId);
 
-    const success = await this.boardRepo.updateBoardTitle(
-      this.currentBoardId,
-      sanitized,
-    );
+			if (success) {
+				this.tasksByColumn.update((prev) => {
+					const updated = {...prev};
+					updated[columnId] = updated[columnId].filter((t) => t.id !== taskId);
+					return updated;
+				});
+				this.toastService.showSuccess('Task deleted permanently');
+				console.log('Task deleted successfully');
+				this.closeModal();
+			}
+		} finally {
+			this.isTaskDeleting.set(false);
+		}
+	}
 
-    if (success) {
-      this.boardTitle.set(sanitized);
-      const updatedBoards = await this.boardRepo.getAllUserBoards();
-      this.userBoards.set(updatedBoards);
-      this.toastService.showSuccess('Board title updated');
-    }
-    this.isEditingTitle.set(false);
-  }
+	enableTitleEdit() {
+		this.isEditingTitle.set(true);
+	}
 
-  async deleteBoard(): Promise<boolean> {
-    if (!this.currentBoardId) return false;
-    return await this.boardRepo.deleteBoard(this.currentBoardId);
-  }
+	async saveBoardTitle(newTitle: string) {
+		const sanitized = InputValidationService.sanitize(newTitle, 100);
 
-  async createBoardWithDefaults(title: string): Promise<string | null> {
-    // --- Rate limit check ---
-    if (!this.rateLimiter.canPerform('create-board')) {
-      this.rateLimitError.set(this.rateLimiter.getErrorMessage('create-board'));
-      return null;
-    }
+		if (!this.currentBoardId || !sanitized || sanitized === this.boardTitle()) {
+			this.isEditingTitle.set(false);
+			return;
+		}
 
-    const sanitizedTitle = InputValidationService.sanitize(title, 100) || 'New Project';
+		const success = await this.boardRepo.updateBoardTitle(
+			this.currentBoardId,
+			sanitized,
+		);
 
-    this.isLoading.set(true);
-    const newBoardId = await this.boardRepo.createBoardWithDefaults(sanitizedTitle);
-    if (!newBoardId) {
-      this.isLoading.set(false);
-    } else {
-      this.toastService.showSuccess('New board created');
-    }
-    return newBoardId;
-  }
+		if (success) {
+			this.boardTitle.set(sanitized);
+			const updatedBoards = await this.boardRepo.getAllUserBoards();
+			this.userBoards.set(updatedBoards);
+			this.toastService.showSuccess('Board title updated');
+		}
+		this.isEditingTitle.set(false);
+	}
+
+	async deleteBoard(): Promise<boolean> {
+		if (!this.currentBoardId) return false;
+		return await this.boardRepo.deleteBoard(this.currentBoardId);
+	}
+
+	async createBoardWithDefaults(title: string): Promise<string | null> {
+		// --- Rate limit check ---
+		if (!this.rateLimiter.canPerform('create-board')) {
+			this.rateLimitError.set(this.rateLimiter.getErrorMessage('create-board'));
+			return null;
+		}
+
+		const sanitizedTitle =
+			InputValidationService.sanitize(title, 100) || 'New Project';
+
+		this.isLoading.set(true);
+		const newBoardId =
+			await this.boardRepo.createBoardWithDefaults(sanitizedTitle);
+		if (!newBoardId) {
+			this.isLoading.set(false);
+		} else {
+			this.toastService.showSuccess('New board created');
+		}
+		return newBoardId;
+	}
 }
