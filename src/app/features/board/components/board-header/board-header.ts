@@ -6,6 +6,7 @@ import { IconPlus } from '../../../../shared/components/icons/icon-plus';
 import { IconChevronDown } from '../../../../shared/components/icons/icon-chevron-down';
 import { IconWarning } from '../../../../shared/components/icons/icon-warning';
 
+/** Board topbar: title editing, board switcher dropdown, and create/delete actions. */
 @Component({
   selector: 'app-board-header',
   standalone: true,

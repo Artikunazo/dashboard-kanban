@@ -3,6 +3,7 @@ import {TaskRepository} from '../../domain/repositories/task.repository';
 import {SupabaseService} from '../../../../core/services/supabase';
 import {Task} from '../../models/board.models';
 
+/** Supabase implementation of {@link TaskRepository}. */
 @Injectable({
 	providedIn: 'root',
 })
@@ -27,6 +28,10 @@ export class SupabaseTaskRepository implements TaskRepository {
 		}
 	}
 
+	/**
+	 * Strips `assignee` (a joined field, not a real DB column) before upserting
+	 * to prevent Supabase PGRST204 ("column does not exist") errors.
+	 */
 	async updateTasksBulk(tasks: Task[]): Promise<boolean> {
 		if (tasks.length === 0) return true;
 

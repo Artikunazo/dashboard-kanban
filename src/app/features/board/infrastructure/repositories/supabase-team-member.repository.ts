@@ -3,6 +3,7 @@ import {TeamMemberRepository} from '../../domain/repositories/team-member.reposi
 import {SupabaseService} from '../../../../core/services/supabase';
 import {TeamMember} from '../../models/board.models';
 
+/** Supabase implementation of {@link TeamMemberRepository}. */
 @Injectable({
 	providedIn: 'root',
 })

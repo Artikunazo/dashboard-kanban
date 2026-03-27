@@ -15,6 +15,10 @@ import {RateLimiterService} from '../../../core/services/rate-limiter.service';
 import {InputValidationService} from '../../../core/services/input-validation.service';
 import {ToastService} from '../../../core/services/toast.service';
 
+/**
+ * Application-layer facade that owns all board state as Angular signals.
+ * Components read signals and call methods here — never repositories directly.
+ */
 @Injectable({
 	providedIn: 'root',
 })

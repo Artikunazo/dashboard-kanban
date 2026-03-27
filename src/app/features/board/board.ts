@@ -7,6 +7,7 @@ import {ColumnComponent} from './components/column/column';
 import {BoardHeaderComponent} from './components/board-header/board-header';
 import {InputValidationService} from '../../core/services/input-validation.service';
 
+/** Root board component. Bridges the route `boardId` input with {@link BoardFacade} and delegates all actions to it. */
 @Component({
 	selector: 'app-board',
 	standalone: true,

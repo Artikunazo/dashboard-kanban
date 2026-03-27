@@ -4,6 +4,7 @@ import { Column, Task } from '../../models/board.models';
 import { TaskCardComponent } from '../task-card/task-card';
 import { IconPlus } from '../../../../shared/components/icons/icon-plus';
 
+/** Renders a single Kanban column with its CDK drag-drop list and task cards. */
 @Component({
   selector: 'app-column',
   standalone: true,

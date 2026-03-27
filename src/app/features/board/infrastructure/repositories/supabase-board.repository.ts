@@ -4,6 +4,7 @@ import {SupabaseService} from '../../../../core/services/supabase';
 import {BoardData} from '../../models/board.models';
 import {LexoRank} from '@dalet-oss/lexorank';
 
+/** Supabase implementation of {@link BoardRepository}. */
 @Injectable({
 	providedIn: 'root',
 })
@@ -39,6 +40,7 @@ export class SupabaseBoardRepository implements BoardRepository {
 		}
 	}
 
+	/** Uses `maybeSingle()` to avoid PGRST116 (406) when the board doesn't exist yet. */
 	async getBoardDetails(boardId: string): Promise<any | null> {
 		try {
 			const {data, error} = await this.supabase

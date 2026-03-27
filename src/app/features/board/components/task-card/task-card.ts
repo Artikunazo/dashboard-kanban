@@ -1,6 +1,10 @@
 import { Component, input, output } from '@angular/core';
 import { Task } from '../../models/board.models';
 
+/**
+ * Renders a single task card. Distinguishes a genuine click from a drag by
+ * checking that the pointer moved < 5 px between `mousedown` and `click`.
+ */
 @Component({
   selector: 'app-task-card',
   standalone: true,

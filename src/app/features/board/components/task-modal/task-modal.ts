@@ -12,6 +12,7 @@ import {IconSpinner} from '../../../../shared/components/icons/icon-spinner';
 import {IconDots} from '../../../../shared/components/icons/icon-dots';
 import {AssigneePickerComponent} from '../../../../shared/components/assignee-picker/assignee-picker';
 
+/** `'create'` renders a blank form; `'view'` pre-fills the form and enables inline field editing. */
 export type ModalMode = 'create' | 'view';
 
 @Component({
