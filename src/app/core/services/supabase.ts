@@ -73,7 +73,7 @@ export class SupabaseService {
 
 			return data ? data.id : null;
 		} catch (error) {
-			console.error('Error crítico buscando el tablero del visitante:', error);
+			console.error('Critical error fetching visitor board:', error);
 			return null;
 		}
 	}

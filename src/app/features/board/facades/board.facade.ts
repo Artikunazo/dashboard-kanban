@@ -141,7 +141,7 @@ export class BoardFacade {
 		) {
 			draggedTask.position = newPositionStr;
 			draggedTask.column_id = targetColumnId;
-			console.log(`Moviendo tarea a LexoRank: ${newPositionStr}`);
+			console.log(`Moving task to LexoRank: ${newPositionStr}`);
 			this.taskRepo.updateTasksBulk([draggedTask]);
 			this.analytics.taskDropped(draggedTask.id, sourceColumnId, targetColumnId);
 		}

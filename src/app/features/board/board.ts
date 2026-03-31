@@ -45,7 +45,7 @@ export class BoardComponent {
 				const currentBoardId = this.boardId();
 				if (currentBoardId) {
 					console.log(
-						`El ID del tablero cambió a: ${currentBoardId}. Recargando datos...`,
+						`Board ID changed to: ${currentBoardId}. Reloading data...`,
 					);
 					this.facade.loadBoardData(currentBoardId);
 					this.analytics.pageView(`/board/${currentBoardId}`, 'Kanban Board');
