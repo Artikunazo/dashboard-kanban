@@ -14,6 +14,7 @@ import {LexoRank} from '@dalet-oss/lexorank';
 import {RateLimiterService} from '../../../core/services/rate-limiter.service';
 import {InputValidationService} from '../../../core/services/input-validation.service';
 import {ToastService} from '../../../core/services/toast.service';
+import {AnalyticsService} from '../../../core/services/analytics.service';
 
 /**
  * Application-layer facade that owns all board state as Angular signals.
@@ -28,6 +29,7 @@ export class BoardFacade {
 	private teamMemberRepo = inject(SupabaseTeamMemberRepository);
 	private rateLimiter = inject(RateLimiterService);
 	private toastService = inject(ToastService);
+	private analytics = inject(AnalyticsService);
 
 	// State Signals
 	isLoading = signal<boolean>(true);
@@ -87,6 +89,8 @@ export class BoardFacade {
 	}
 
 	handleTaskDrop(event: CdkDragDrop<Task[]>, targetColumnId: string) {
+		const sourceColumnId = event.previousContainer.id;
+
 		if (event.previousContainer === event.container) {
 			moveItemInArray(
 				event.container.data,
@@ -139,6 +143,7 @@ export class BoardFacade {
 			draggedTask.column_id = targetColumnId;
 			console.log(`Moviendo tarea a LexoRank: ${newPositionStr}`);
 			this.taskRepo.updateTasksBulk([draggedTask]);
+			this.analytics.taskDropped(draggedTask.id, sourceColumnId, targetColumnId);
 		}
 	}
 
@@ -147,18 +152,22 @@ export class BoardFacade {
 		this.modalMode.set('create');
 		this.selectedTask.set(null);
 		this.isModalOpen.set(true);
+		this.analytics.taskCreateOpened(columnId);
 	}
 
 	openViewModal(task: Task) {
 		this.selectedTask.set(task);
 		this.modalMode.set('view');
 		this.isModalOpen.set(true);
+		this.analytics.taskViewed(task.id, task.title);
 	}
 
 	closeModal() {
+		const mode = this.modalMode();
 		this.isModalOpen.set(false);
 		this.activeColumnId.set(null);
 		this.selectedTask.set(null);
+		this.analytics.taskModalClosed(mode);
 	}
 
 	dismissRateLimitError() {
@@ -213,6 +222,10 @@ export class BoardFacade {
 					return updated;
 				});
 				this.toastService.showSuccess('Task updated successfully');
+				// Track specific field updates
+				if ('title' in updates) this.analytics.taskTitleEdited(taskId);
+				if ('description' in updates) this.analytics.taskDescriptionEdited(taskId);
+				if ('assignee_id' in updates) this.analytics.taskAssigneeChanged(taskId, updates.assignee_id ?? null);
 			}
 		} finally {
 			this.isTaskSubmitting.set(false);
@@ -255,6 +268,7 @@ export class BoardFacade {
 					return updated;
 				});
 				this.toastService.showSuccess('New task created');
+				this.analytics.taskCreated(newTask.id, columnId);
 			}
 		} finally {
 			this.isTaskSubmitting.set(false);
@@ -277,6 +291,7 @@ export class BoardFacade {
 					updated[columnId] = updated[columnId].filter((t) => t.id !== taskId);
 					return updated;
 				});
+				this.analytics.taskDeleted(taskId);
 				this.toastService.showSuccess('Task deleted permanently');
 				console.log('Task deleted successfully');
 				this.closeModal();
@@ -288,6 +303,7 @@ export class BoardFacade {
 
 	enableTitleEdit() {
 		this.isEditingTitle.set(true);
+		this.analytics.boardTitleEditStarted();
 	}
 
 	async saveBoardTitle(newTitle: string) {
@@ -308,13 +324,17 @@ export class BoardFacade {
 			const updatedBoards = await this.boardRepo.getAllUserBoards();
 			this.userBoards.set(updatedBoards);
 			this.toastService.showSuccess('Board title updated');
+			this.analytics.boardTitleSaved(sanitized);
 		}
 		this.isEditingTitle.set(false);
 	}
 
 	async deleteBoard(): Promise<boolean> {
 		if (!this.currentBoardId) return false;
-		return await this.boardRepo.deleteBoard(this.currentBoardId);
+		const boardId = this.currentBoardId;
+		const success = await this.boardRepo.deleteBoard(boardId);
+		if (success) this.analytics.boardDeleted(boardId);
+		return success;
 	}
 
 	async createBoardWithDefaults(title: string): Promise<string | null> {
@@ -334,6 +354,7 @@ export class BoardFacade {
 			this.isLoading.set(false);
 		} else {
 			this.toastService.showSuccess('New board created');
+			this.analytics.boardCreated(newBoardId, sanitizedTitle);
 		}
 		return newBoardId;
 	}

@@ -6,6 +6,7 @@ import {TaskModal} from './components/task-modal/task-modal';
 import {ColumnComponent} from './components/column/column';
 import {BoardHeaderComponent} from './components/board-header/board-header';
 import {InputValidationService} from '../../core/services/input-validation.service';
+import {AnalyticsService} from '../../core/services/analytics.service';
 
 /** Root board component. Bridges the route `boardId` input with {@link BoardFacade} and delegates all actions to it. */
 @Component({
@@ -16,6 +17,7 @@ import {InputValidationService} from '../../core/services/input-validation.servi
 })
 export class BoardComponent {
 	facade = inject(BoardFacade);
+	private analytics = inject(AnalyticsService);
 
 	boardId = input.required<string>();
 	boardChanged = output<string>();
@@ -46,6 +48,7 @@ export class BoardComponent {
 						`El ID del tablero cambió a: ${currentBoardId}. Recargando datos...`,
 					);
 					this.facade.loadBoardData(currentBoardId);
+					this.analytics.pageView(`/board/${currentBoardId}`, 'Kanban Board');
 				}
 			},
 			{allowSignalWrites: true},
@@ -115,6 +118,7 @@ export class BoardComponent {
 
 	onBoardSelected(boardId: string) {
 		if (boardId && boardId !== this.boardId()) {
+			this.analytics.boardSelected(boardId);
 			this.boardChanged.emit(boardId);
 		}
 	}
